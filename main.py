@@ -63,6 +63,7 @@ def downloadStream(username, streamUrl, qualityName, outputFlag):
                     print("\r" + f"Downloading to {output_path} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
                     # loop !
                 except Exception as e:
+                    fd.close()
                     print("An error occured: " + str(e))
                     if verify(username, urlStruct) is not None:
                         downloadStream(username, streamUrl, qualityName, output)
