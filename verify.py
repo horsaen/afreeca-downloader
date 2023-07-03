@@ -19,11 +19,15 @@ def verify(username, url):
 
         response = session.get(url, headers=headers)
 
-        if response.json()['broad'] is not None:
-            print("Streamer is online.")
-            streamStruct: str = "https://play.afreecatv.com/" + username + "/" + str(response.json()['broad']['broad_no'])
-            return streamStruct
-        
+        if response.json().get('code') is None:
+            if response.json()['broad'] is not None:
+                print("Streamer is online.")
+                streamStruct: str = "https://play.afreecatv.com/" + username + "/" + str(response.json()['broad']['broad_no'])
+                return streamStruct
+        else:
+            print("Streamer not found.")
+            exit(1)
+
         print("Streamer is offline, rechecking in three minutes.")
         # set to 3 mins to avoid rate limiting >:(
         time.sleep(180)
