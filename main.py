@@ -24,12 +24,12 @@ def flagsInit():
 
     return args
 
-def downloadStream(username, streamUrl, qualityName, outputFlag):
+def downloadStream(username, streamUrl, qualityName, user, password):
 
     session = streamlink.Streamlink()
     session.set_option("stream-segment-threads", 10)
-    session.set_plugin_option("afreeca", "username", "")
-    session.set_plugin_option("afreeca", "password", "")
+    session.set_plugin_option("afreeca", "username", user)
+    session.set_plugin_option("afreeca", "password", password)
 
     streams = session.streams(streamUrl)
     stream = streams[qualityName]
@@ -75,8 +75,10 @@ if __name__ == '__main__':
     if os.path.exists("downloads") is False:
         os.makedirs("downloads")
 
-    username = args.username
-    
+    username = args.susername
+    user = args.username
+    password = args.password
+
     if username is False:
         username = input("Enter streamer username:\n")
 
@@ -96,4 +98,4 @@ if __name__ == '__main__':
         menuIndex = menu.show()
         qualityName = quality[menuIndex]
 
-    downloadStream(username, streamUrl, qualityName, output)
+    downloadStream(username, streamUrl, qualityName, user, password)
