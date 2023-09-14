@@ -1,101 +1,55 @@
-import simple_term_menu
-import streamlink
-import requests
-import os
-import time
+from utils.download import download
+from utils.downloadVod import downloadVod
+from utils.getPlaylist import getVodPlaylist, getVideoPlaylist, getStationNo
+from utils.verify import verify
 import argparse
+import os
 
-# import our own modules
-from verify import verify
-from utils.formatBytes import format_bytes
-from utils.formatDuration import format_duration
-from utils.manual_quality import manual_quality
+from plugins.pandatv.panda import main as pandaMain
+
+# qualities::::
+# original
+# hd
+# sd
 
 def flagsInit():
     parser = argparse.ArgumentParser(description="Afreeca TV Downloader :D")
 
-    parser.add_argument("-m", "--manual", default=False, action="store_true", help="Manually select download quality")
-    parser.add_argument("-o", "--output", default=False, help="File output, defaults to ")
-    parser.add_argument("-su", "--susername", default=False, help="Streamer username")
-    parser.add_argument("-u", "--username", default=False, help="Afreeca Username")
-    parser.add_argument("-p", "--password", default=False, help="Afreeca Password")
+    parser.add_argument('-u', '--username', default=False, help='Streamer username')
+    parser.add_argument('-p', '--password', default='', help='Stream password [EXPERIMENTAL]')
+    parser.add_argument('--from-start', default=False, action='store_true', help='Download from the start of the stream [EXPERIMENTAL]')
+    parser.add_argument('--panda', default=False, action='store_true', help='Download video from PandaTV [NOT IMPLEMENTED]')
+    parser.add_argument('--batch', default=False, action='store_true', help='Download multiple streams from a text file [NOT IMPLEMENTED]')
 
     args = parser.parse_args()
-
     return args
 
-def downloadStream(username, streamUrl, qualityName, user, password):
-
-    session = streamlink.Streamlink()
-    session.set_option("stream-segment-threads", 10)
-    session.set_plugin_option("afreeca", "username", user)
-    session.set_plugin_option("afreeca", "password", password)
-
-    streams = session.streams(streamUrl)
-    stream = streams[qualityName]
-    
-    print("Downloading stream using " + qualityName + " quality")
-
-    now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-
-    if os.path.exists("downloads/" + username) is False:
-        os.makedirs("downloads/" + username)
-
-    output_path: str = username + "-" + now + "-afreeca.ts"
-    output_path_absolute: str = "downloads/" + username + "/" + username + "-" + now + "-afreeca.ts" 
-
-    # if outputFlag is not False:
-    #     outputPath = outputFlag
-
-    with stream.open() as fd:
-        with open(output_path_absolute, 'wb') as output:
-            file_size = 0
-            start_time = time.time()
-            while True:
-                try:
-                    data = fd.read(1024)
-                    if not data:
-                        break
-                    output.write(data)
-                    file_size += len(data)
-                    elapsed_time = time.time() - start_time
-                    # ugly but works
-                    print("\r" + f"Downloading to {output_path} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
-                    # loop !
-                except Exception as e:
-                    fd.close()
-                    print("An error occured: " + str(e))
-                    if verify(username, urlStruct) is not None:
-                        downloadStream(username, streamUrl, qualityName, output)
+def main(username, pwd, fromStart):
+    if fromStart is True:
+        station_no = getStationNo(username, pwd)
+        if station_no is False:
+            station_no = input("Unable to get get stream id automatically, please input one manually:\n")
+        vodUrl, filename = getVodPlaylist(username, station_no)
+        downloadVod(vodUrl, filename, username)
+    if verify(username):
+        download(getVideoPlaylist(username, pwd), username)
 
 if __name__ == '__main__':
     args = flagsInit()
 
-    # check if dl folder exists :D
-    if os.path.exists("downloads") is False:
-        os.makedirs("downloads")
+    if os.path.exists('downloads') is False:
+        os.makedirs('downloads')
 
-    username = args.susername
-    user = args.username
-    password = args.password
+    username = args.username
+    pwd = args.password
+    fromStart = args.from_start
+    panda = args.panda
 
     if username is False:
-        username = input("Enter streamer username:\n")
+        username = input('Enter username:\n')
 
-    urlStruct: str = 'https://bjapi.afreecatv.com/api/' + username + '/station'
-
-    streamUrl = verify(username, urlStruct)
-
-    output = args.output
-
-    print(streamUrl)
-
-    qualityName: str = 'best'
-
-    if args.manual is True:
-        quality = manual_quality(streamUrl)
-        menu = simple_term_menu.TerminalMenu(quality)
-        menuIndex = menu.show()
-        qualityName = quality[menuIndex]
-
-    downloadStream(username, streamUrl, qualityName, user, password)
+    # # change to switch case later
+    if panda is True:
+        pandaMain(username)
+    else:
+      main(username, pwd, fromStart)

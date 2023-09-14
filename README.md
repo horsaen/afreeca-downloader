@@ -1,77 +1,31 @@
 # afreeca-downloader
 
-A simple tool for the automatic download of afreeca (and other sites) 
+A simple tool to download streams from afreeca and other sites
+
+Rewrite of [afreeca-downloader-old](https://github.com/horsaen/afreecatv-downloader-old), no longer using libraries such as streamlink, using a more reliable solution :DD
+
+## Features
+- DVR-like recording, neatly sorted by user in a download directory
+- Downloading stream from start [experimental, but working]
+- Multi-site support
+- Batch downloading [not implemented]
 
 ## Installation and Usage
 
 Clone repo
 ```bash
-git clone https://github.com/horsaen/afreeca-downloader
+git clone https://github.com/horsaen/afreeca-downloader.git
 ```
 
-Cd into directory and install dependencies
-
+Cd and use
 ```bash
-cd afreeca-downloader
-pip3 install -r REQUIREMENTS.txt
+cd afreeca-downloader && python3 main.py -h
 ```
 
-Run
-
-```bash
-python3 main.py -h
-```
-
-## Todo
-- [ ] Allow for custom output directory
-- [ ] Remove unneeded error warnings, particularly the streamlink warning about missing segments or something
-- [ ] Take inspo from streamlink themselves and make this work for multiple sites (depsite the name, so funny) because that's cool
-- [ ] Add to pip or whatever that is
-- [ ] Multithreading
-
-## FFMPEG workflow
-Here's just a simple guide on changing the direct output to something a bit more storage friendly
-
-Ignore .ts segment errors:
-
-```bash
-ffmpeg -i <INPUT>.ts -map 0 -ignore_unkown -c copy <OUTPUT>.ts
-```
-
-### Matroska
-
-```bash
-ffmpeg -i <INPUT>.ts -map 0 -c copy <OUTPUT>.mkv
-```
-
-### MP4
-
-```bash
-ffmpeg -i <INPUT>.ts -map 0 -c copy <OUTPUT>.mp4
-```
-
-Re-encode the video to H.264 and stream copy the audio:
-
-```bash
-ffmpeg -i input.ts -c:v libx264 -c:a copy output.mp4
-```
-
-Re-encode both video and audio:
-
-```bash
-ffmpeg -i input.ts -c:v libx264 -c:a aac output.mp4
-```
-
-Lossless H.264 example:
-
-```bash
-ffmpeg -i input.ts -c:v libx264 -crf 0 -c:a copy output.mp4
-```
-
-Lossless files will be huge ^^
-
-### Lossless H.265
-
-```bash
-ffmpeg -i <INPUT>.ts -c:v libx265 -x265-params "lossless=1" <OUTPUT>.mkv
-```
+## Supported sites
+- [AfreecaTV](https://afreecatv.com/)
+- [PandaTV](https://www.pandalive.co.kr/) [BETA, WORKING]
+- [FlexTV](https://www.flextv.co.kr/) [WIP, NOT IMPLEMENTED]
+- [Twitch](https://twitch.tv/) [WIP, NOT IMPLEMENTED]
+- [Kick](https://kick.com/) [WIP, NOT IMPLEMENTED]
+- [YouTube](https://youtube.com) [???]
