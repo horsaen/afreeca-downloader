@@ -6,6 +6,7 @@ import argparse
 import os
 
 from plugins.pandatv.panda import main as pandaMain
+from plugins.afreeca_m3u8.download_m3u8 import download_m3u8
 
 # qualities::::
 # original
@@ -20,12 +21,17 @@ def flagsInit():
     parser.add_argument('--from-start', default=False, action='store_true', help='Download from the start of the stream [EXPERIMENTAL]')
     parser.add_argument('--panda', default=False, action='store_true', help='Download video from PandaTV [NOT IMPLEMENTED]')
     parser.add_argument('--batch', default=False, action='store_true', help='Download multiple streams from a text file [NOT IMPLEMENTED]')
+    parser.add_argument('--playlist', default=False, help="Download from an afreeca m3u8 playlist, anything other than smil:vod has not been tested")
 
     args = parser.parse_args()
     return args
 
-def main(username, pwd, fromStart):
-    if fromStart is True:
+def main(username, pwd, args):
+    if args.panda is True:
+        pandaMain(username)
+    if args.playlist is not False:
+        download_m3u8(args.playlist)
+    if args.from_start is True:
         station_no = getStationNo(username, pwd)
         if station_no is False:
             station_no = input("Unable to get get stream id automatically, please input one manually:\n")
@@ -42,14 +48,12 @@ if __name__ == '__main__':
 
     username = args.username
     pwd = args.password
-    fromStart = args.from_start
-    panda = args.panda
 
-    if username is False:
+    if username is False and args.playlist is False:
         username = input('Enter username:\n')
 
     # # change to switch case later
-    if panda is True:
-        pandaMain(username)
-    else:
-      main(username, pwd, fromStart)
+    # if panda is True:
+        # pandaMain(username)
+    # else:
+    main(username, pwd, args)
