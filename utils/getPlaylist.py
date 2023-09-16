@@ -1,4 +1,5 @@
 import requests
+import platform
 
 def getPlaylistBase(station_no):
   url = 'https://livestream-manager.afreecatv.com/broad_stream_assign.html?return_type=gcp_cdn&cors_origin_url=play.afreecatv.com&broad_key=' + station_no + '-common-master-hls'
@@ -80,6 +81,8 @@ def getVodPlaylist(username, station_no):
   res = requests.request("POST", url, data=payload, headers=headers)
   try:
     vodUrl = 'https://vod-archive-fmp4-kr-cdn-z01.afreecatv.com' + res.json()['media_path']
+    if platform.system() == 'Windows':
+      filename = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_').replace(':', '-') + '.mp4'
     filename = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_') + '.mp4'
   except KeyError:
     exit('Error getting VOD playlist.\nCould be a wrong station number or the stream has expired.')

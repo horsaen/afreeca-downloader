@@ -1,5 +1,6 @@
 import os
 import requests
+import platform
 from urllib.parse import urljoin, urlparse
 from tools.formatBytes import format_bytes
 
@@ -29,6 +30,8 @@ def getPlaylistInfo(link):
   }
   res = requests.request("POST", url, data=payload, headers=headers)
   bj_id = res.json()['bj_id']
+  if platform.system() == 'Windows':
+    output_file = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_').replace(':', '-') + '.ts'
   output_file = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_') + '.ts'
   return bj_id, output_file
 

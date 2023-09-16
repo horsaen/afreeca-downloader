@@ -4,6 +4,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
 import os
+import platform
 from urllib.parse import urljoin
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
@@ -37,6 +38,8 @@ def download(url, username):
 
   base_url = url.rsplit('/', 1)[0] + '/'
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+  if platform.system() == 'Windows':
+    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
   output_filename = username + '-' + getStationNo(username,'') + '-' + now + '-afreeca.ts'
 
   output_path = 'downloads/' + username + '/' + output_filename
