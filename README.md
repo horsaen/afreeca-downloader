@@ -22,6 +22,11 @@ Cd and use
 cd afreeca-downloader && python3 main.py -h
 ```
 
+Set cookies
+- Developer tools > Storage > Cookies
+- Copy PdboxTicket into [cookies](cookies)
+- Should end up looking something like ``PdboxTicket=.A32.``
+
 ## Supported sites
 - [AfreecaTV](https://afreecatv.com/)
 - [PandaTV](https://www.pandalive.co.kr/) [BETA, WORKING]
