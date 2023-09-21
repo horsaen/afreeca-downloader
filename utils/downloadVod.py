@@ -33,9 +33,8 @@ def downloadVod(url, output_filename, username):
                 # does not include time as it is not a live stream, don't want to run mediainfo on every check
                 if len(chunk) != 1024 and getStationNo(username, '') is False:
                     print('\nDownload complete.')
-                    break
+                    exit()
                     
                 print("\r" + f"Downloading to {output_filename} || {format_bytes(os.path.getsize(output_path))}    \x1b[?25l", end="", flush=True)
 
         time.sleep(1)
-        exit()
