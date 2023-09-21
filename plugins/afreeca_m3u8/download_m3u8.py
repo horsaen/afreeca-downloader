@@ -32,7 +32,8 @@ def getPlaylistInfo(link):
   bj_id = res.json()['bj_id']
   if platform.system() == 'Windows':
     output_file = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_').replace(':', '-') + '.ts'
-  output_file = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_') + '.ts'
+  else:
+    output_file = res.json()['bj_id'] + '-' + res.json()['broad_no'] + '-' + res.json()['file_start'].replace(' ', '_') + '.ts'
   return bj_id, output_file
 
 def getMasterPlaylist(link):
