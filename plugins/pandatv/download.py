@@ -1,4 +1,5 @@
 import requests
+import platform
 import time
 import os
 from tools.formatBytes import format_bytes
@@ -17,6 +18,8 @@ def download(username):
   url = getStreams(username, '')[0]
 
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+  if platform.system() == 'Windows':
+    now = now.replace(':', '-')
   output_filename = username + '-' + now + '-pandatv.ts'
   output_path = 'downloads/PandaTV/' + username + '/' + output_filename
 
