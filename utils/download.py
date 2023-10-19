@@ -40,6 +40,7 @@ def download(url, username):
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
   if platform.system() == 'Windows':
     now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+
   output_filename = username + '-' + getStationNo(username,'') + '-' + now + '-afreeca.ts'
 
   output_path = 'downloads/' + username + '/' + output_filename
@@ -68,7 +69,7 @@ def download(url, username):
             download(getVideoPlaylist(username, ''), username)
 
     new_segment_lines = [
-        line.strip() for line in playlist_content.splitlines() if line.endswith('.TS')
+        line.strip() for line in playlist_content.splitlines() if line.endswith('.ts')
     ]
 
     with open(output_path, 'ab') as output_file:

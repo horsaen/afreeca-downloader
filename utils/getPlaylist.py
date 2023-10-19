@@ -39,7 +39,7 @@ def getMasterPlaylist(username, station_no, pwd):
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "same-site",
     "Sec-GPC": "1",
-    "Cookie": cookie,
+    "Cookie": "PdboxTicket=" + cookie,
     "TE": "trailers",
   }
   res = requests.request("POST", url, data=payload, headers=headers)
