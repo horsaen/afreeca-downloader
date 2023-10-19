@@ -22,15 +22,26 @@ Cd and use
 cd afreeca-downloader && python3 main.py -h
 ```
 
-Set cookies
-- Developer tools > Storage > Cookies
-- Copy PdboxTicket into [cookies](cookies)
-- Should end up looking something like ``PdboxTicket=.A32.``
+## Set cookies
 
-## Supported sites
-- [AfreecaTV](https://afreecatv.com/)
-- [PandaTV](https://www.pandalive.co.kr/) [BETA, WORKING]
-- [FlexTV](https://www.flextv.co.kr/) [WIP, NOT IMPLEMENTED]
-- [Twitch](https://twitch.tv/) [WIP, NOT IMPLEMENTED]
-- [Kick](https://kick.com/) [WIP, NOT IMPLEMENTED]
-- [YouTube](https://youtube.com) [???]
+Sometimes cookies are needed to access certain data, they can be found in Developer tools > Storage > Cookies
+
+Unless specified, cookies aren't needed
+
+### afreeca
+- Copy only the VALUE of PdboxTicket into [cookies](cookies)
+- Should end up looking something like ``.A32.7bbT5``
+
+### pandatv
+- Copy only the VALUE of sessKey into [panda-cookies](plugins/pandatv/panda-cookies)
+- Should just look like a random string
+
+Please note: using cookies on panda causes you to be kicked out of the current tab, but not logged out, there does not seem to be a fix for this.A32.7bbT5
+
+## Modes
+
+the --mode flag supports the following arguements
+
+- afreeca (default)
+- panda
+- bigo
