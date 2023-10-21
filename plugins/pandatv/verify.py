@@ -41,27 +41,26 @@ def verify(username):
 
   while True:
     res = requests.request("POST", url, data=payload, headers=headers)
-    
+
     # check if error
     try:
       if res.json()['errorData'] is not None:
         if res.json()['errorData']['code'] == 'needAdult':
           print('Stream is 19+ and unable to retrieve stream URL, input a valid sessKey in panda-cookies.')
           exit(1)
+        elif res.json()['errorData']['code'] == 'castEnd':
+          print('Stream is offline, retrying in 3 minutes.')
     # handle if no error
     except:
-      if res.json()['result'] is False:
-        print('Streamer is offline, rechecking in three minutes.')
-      else:
-        # do this all here instead of needing another file
-        response = requests.get(res.json()['PlayList']['hls'][0]['url'])
+      # do this all here instead of needing another file
+      response = requests.get(res.json()['PlayList']['hls'][0]['url'])
 
-        steams = []
+      steams = []
 
-        for lines in response.text.splitlines():
-          if lines.startswith('https://'):
-            steams.append(lines)
+      for lines in response.text.splitlines():
+        if lines.startswith('https://'):
+          steams.append(lines)
 
-        return steams[0]
+      return steams[0]
 
     time.sleep(180)
