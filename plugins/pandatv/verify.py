@@ -1,7 +1,5 @@
 import requests
 import time
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 cookie = open('plugins/pandatv/panda-cookies', 'r').read().strip()
 headers = {
@@ -14,7 +12,7 @@ headers = {
   "DNT": "1",
   "Connection": "keep-alive",
   "Referer": "https://www.pandalive.co.kr/",
-  "Cookie": cookie,
+  "Cookie": "sessKey=" + cookie,
   "Sec-Fetch-Dest": "empty",
   "Sec-Fetch-Mode": "cors",
   "Sec-Fetch-Site": "same-site",
@@ -22,11 +20,48 @@ headers = {
   "TE": "trailers"
 }
 
-def userExists(username):
+def checkUser(username):
   url = "https://api.pandalive.co.kr/v1/member/bj"
 
   payload = "userId=" + username
 
   response = requests.request("POST", url, data=payload, headers=headers)
+  
+  if response.json()['result']:
+    return(response.json()['result'])
+  else:
+    print('Streamer not found')
+    exit(1)
 
-  return(response.json()['result'])
+# get master plist
+def verify(username):
+  url = "https://api.pandalive.co.kr/v1/live/play"
+
+  payload = 'action=watch&userId=' + username + '&password=&width=48&height=48&imageResize=crop&fanIconWidth=44&fanIconHeight=44&fanIconImageResize=crop'
+
+  while True:
+    res = requests.request("POST", url, data=payload, headers=headers)
+    
+    # check if error
+    try:
+      if res.json()['errorData'] is not None:
+        if res.json()['errorData']['code'] == 'needAdult':
+          print('Stream is 19+ and unable to retrieve stream URL, input a valid sessKey in panda-cookies.')
+          exit(1)
+    # handle if no error
+    except:
+      if res.json()['result'] is False:
+        print('Streamer is offline, rechecking in three minutes.')
+      else:
+        # do this all here instead of needing another file
+        response = requests.get(res.json()['PlayList']['hls'][0]['url'])
+
+        steams = []
+
+        for lines in response.text.splitlines():
+          if lines.startswith('https://'):
+            steams.append(lines)
+
+        return steams[0]
+
+    time.sleep(180)

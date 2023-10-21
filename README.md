@@ -36,7 +36,7 @@ Unless specified, cookies aren't needed
 - Copy only the VALUE of sessKey into [panda-cookies](plugins/pandatv/panda-cookies)
 - Should just look like a random string
 
-Please note: using cookies on panda causes you to be kicked out of the current tab, but not logged out, there does not seem to be a fix for this.A32.7bbT5
+Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there doesn't seem to be a fix for this (more testing needed)
 
 ## Modes
 

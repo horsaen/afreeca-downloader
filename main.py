@@ -5,8 +5,8 @@ from utils.verify import verify
 import argparse
 import os
 
-from plugins.pandatv.panda import main as pandaMain
-from plugins.afreeca_m3u8.download_m3u8 import download_m3u8
+from plugins.pandatv.main import main as pandaMain
+from plugins.pandatv.verify import checkUser as pandaVerify
 from plugins.bigo.main import main as bigoLive
 
 # qualities::::
@@ -39,7 +39,8 @@ def main(username, pwd, args):
             if verify(username):
                 download(getVideoPlaylist(username, pwd), username)
     elif args.mode == 'panda':
-        pandaMain(username)
+        if pandaVerify(username):
+            pandaMain(username)
     elif args.mode == 'bigo':
         bigoLive(username)
     elif args.mode == 'kick':

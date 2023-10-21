@@ -1,25 +1,14 @@
 import requests
-import platform
 import time
 import os
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
-from plugins.pandatv.getPlaylist import getStreams
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from plugins.pandatv.verify import verify
 
-def download(username):
-  session = requests.Session()
-  retry = Retry(connect=3, backoff_factor=0.5)
-  adapter = HTTPAdapter(max_retries=retry)
-  session.mount('http://', adapter)
-  session.mount('https://', adapter)
-
-  url = getStreams(username, '')[0]
+def download(url, username):
 
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-  if platform.system() == 'Windows':
-    now = now.replace(':', '-')
+
   output_filename = username + '-' + now + '-pandatv.ts'
   output_path = 'downloads/PandaTV/' + username + '/' + output_filename
 
@@ -33,8 +22,11 @@ def download(username):
 
   while True:
 
-    response = session.get(url)
+    response = requests.get(url)
     playlist_content = response.text
+
+    if '.ts' not in playlist_content:
+      download(verify(username), username)
 
     new_segment_lines = [
       line.strip() for line in playlist_content.splitlines() if line.startswith('https://')
