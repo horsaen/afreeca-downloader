@@ -41,7 +41,6 @@ def verify(username):
 
   while True:
     res = requests.request("POST", url, data=payload, headers=headers)
-
     # check if error
     try:
       if res.json()['errorData'] is not None:
@@ -51,16 +50,19 @@ def verify(username):
         elif res.json()['errorData']['code'] == 'castEnd':
           print('Stream is offline, retrying in 3 minutes.')
     # handle if no error
-    except:
+    except KeyError:
       # do this all here instead of needing another file
-      response = requests.get(res.json()['PlayList']['hls'][0]['url'])
+      try:
+        response = requests.get(res.json()['PlayList']['hls'][0]['url'])
 
-      steams = []
+        steams = []
 
-      for lines in response.text.splitlines():
-        if lines.startswith('https://'):
-          steams.append(lines)
+        for lines in response.text.splitlines():
+          if lines.startswith('https://'):
+            steams.append(lines)
 
-      return steams[0]
+        return steams[0]
+      except TypeError:
+        print('Unhandled error, trying again in 3 minutes.')
 
     time.sleep(180)
