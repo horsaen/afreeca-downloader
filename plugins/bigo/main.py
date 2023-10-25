@@ -1,5 +1,6 @@
 import requests
 import os
+import platform
 import time
 from urllib.parse import urljoin
 
@@ -35,7 +36,10 @@ def getPlaylist(id):
 
 def downloadStream(url, siteId, nickname):
   segment_urls = set()
+
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+  if platform.system() == 'Windows':
+    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
 
   output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
   output_path = 'downloads/Bigo/' + nickname + '/' + output_filename
@@ -53,6 +57,7 @@ def downloadStream(url, siteId, nickname):
     
     if '.ts' not in playlist_content:
       if verify(siteId):
+        url, siteId, nickname = getPlaylist(siteId)
         downloadStream(url, siteId, nickname)
 
     new_segment_lines = [
@@ -76,5 +81,5 @@ def main(id):
   if checkExists(id) == False:
     print('Streamer not found.')
     exit(1)
-  url, siteId, nickname = getPlaylist(id)
+  url, siteId, nickname = verify(id)
   downloadStream(url, siteId, nickname)

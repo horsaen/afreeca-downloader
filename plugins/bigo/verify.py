@@ -54,7 +54,7 @@ def verify(siteId):
   while True:
     response = requests.request("POST", url, data=payload, headers=headers)
     if response.json()['data']['hls_src'] != "":
-      return response.json()['data']['hls_src']
+      return response.json()['data']['hls_src'], response.json()['data']['siteId'], response.json()['data']['nick_name']
 
     print('Streamer is offline, rechecking in three minutes.')
     
