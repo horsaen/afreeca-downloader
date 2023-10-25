@@ -8,6 +8,7 @@ import os
 from plugins.pandatv.main import main as pandaMain
 from plugins.pandatv.verify import checkUser as pandaVerify
 from plugins.bigo.main import main as bigoLive
+from plugins.kick.main import main as kickMain
 
 # qualities::::
 # original
@@ -44,7 +45,7 @@ def main(username, pwd, args):
     elif args.mode == 'bigo':
         bigoLive(username)
     elif args.mode == 'kick':
-        print('placeholder')
+        kickMain(username)
     elif args.mode == 'tiktok':
         print('placeholder')
 

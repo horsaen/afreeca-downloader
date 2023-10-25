@@ -38,6 +38,17 @@ Unless specified, cookies aren't needed
 
 Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there doesn't seem to be a fix for this (more testing needed)
 
+### kick
+This one requires a bit more cookies, please add the VALUES to [kick-cookies](plugins/kick/kick-cookies) in the following order:
+
+1. __cf_bm
+2. cf_clearance
+3. kick_session
+
+Mess up the order and it won't work
+
+Please note: still heavily in beta
+
 ## Modes
 
 the --mode flag supports the following arguements
