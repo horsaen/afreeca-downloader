@@ -56,3 +56,4 @@ the --mode flag supports the following arguements
 - afreeca (default)
 - panda
 - bigo
+- kick
