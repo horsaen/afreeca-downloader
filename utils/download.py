@@ -38,6 +38,7 @@ def download(url, username):
 
   base_url = url.rsplit('/', 1)[0] + '/'
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+  
   if platform.system() == 'Windows':
     now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
 

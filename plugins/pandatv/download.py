@@ -1,6 +1,7 @@
 import requests
 import time
 import os
+import platform
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
 from plugins.pandatv.verify import verify
@@ -8,6 +9,9 @@ from plugins.pandatv.verify import verify
 def download(url, username):
 
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+
+  if platform.system() == 'Windows':
+    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
 
   output_filename = username + '-' + now + '-pandatv.ts'
   output_path = 'downloads/PandaTV/' + username + '/' + output_filename
