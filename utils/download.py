@@ -69,7 +69,7 @@ def download(url, username):
             download(getVideoPlaylist(username, ''), username)
 
     new_segment_lines = [
-        line.strip() for line in playlist_content.splitlines() if line.endswith('.ts')
+        line.strip() for line in playlist_content.splitlines() if line.endswith('.TS') or line.endswith('.ts')
     ]
 
     with open(output_path, 'ab') as output_file:
