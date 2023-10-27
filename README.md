@@ -47,7 +47,7 @@ This one requires a bit more cookies, please add the VALUES to [kick-cookies](pl
 
 Mess up the order and it won't work
 
-Please note: still heavily in beta
+Please note: still heavily in beta, their api sucks and the reliability is horrid, don't expect it to work too much
 
 ## Modes
 
