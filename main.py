@@ -9,6 +9,8 @@ from plugins.pandatv.main import main as pandaMain
 from plugins.pandatv.verify import checkUser as pandaVerify
 from plugins.bigo.main import main as bigoLive
 from plugins.kick.main import main as kickMain
+from plugins.tt.main import main as ttMain
+from plugins.twitch.main import main as twitchMain
 
 # qualities::::
 # original
@@ -47,7 +49,9 @@ def main(username, pwd, args):
     elif args.mode == 'kick':
         kickMain(username)
     elif args.mode == 'tiktok':
-        print('placeholder')
+        ttMain(username)
+    elif args.mode == 'twitch':
+        twitchMain(username)
 
 if __name__ == '__main__':
     args = flagsInit()

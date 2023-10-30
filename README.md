@@ -17,6 +17,11 @@ Clone repo
 git clone https://github.com/horsaen/afreeca-downloader.git
 ```
 
+Install deps
+```bash
+pip3 install -r requirements.txt
+```
+
 Cd and use
 ```bash
 cd afreeca-downloader && python3 main.py -h
