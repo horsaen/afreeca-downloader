@@ -24,6 +24,7 @@ def getAccessToken(username):
     "Client-ID": clientId,
     "Content-Type": "text/plain; charset=UTF-8",
     "Origin": "https://www.twitch.tv",
+    "Device-Id": "hCzqYTFVEKtW5HTg9qE3uFH61YN70t3p",
     "DNT": "1",
     "Connection": "keep-alive",
     "Sec-Fetch-Dest": "empty",
@@ -91,7 +92,7 @@ def download(username, url):
     res = requests.get(url)
     playlist_content = res.text
 
-    if '.ts' or '.TS' not in playlist_content:
+    if '.ts' not in playlist_content:
       value, signature = getAccessToken(username)
       newUrl = getMasterPlaylist(username, value, signature)
       download(username, newUrl)
@@ -110,6 +111,8 @@ def download(username, url):
           elapsed_time = time.time() - start_time
           output_file.write(res.content)
           print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
+    
+    time.sleep(3)
 
 def main(username):
   value, signature = getAccessToken(username)
