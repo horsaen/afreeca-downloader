@@ -62,3 +62,4 @@ the --mode flag supports the following arguements
 - panda
 - bigo
 - kick
+- twitch
