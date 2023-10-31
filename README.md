@@ -63,3 +63,4 @@ the --mode flag supports the following arguements
 - bigo
 - kick
 - twitch
+- tiktok
