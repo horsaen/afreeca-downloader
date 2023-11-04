@@ -46,3 +46,5 @@ def download(url, username):
           elapsed_time = time.time() - start_time
           output_file.write(res.content)
           print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
+          
+    time.sleep(1)
