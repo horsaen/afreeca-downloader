@@ -72,7 +72,7 @@ def downloadStream(url, siteId, nickname):
           if segment_url not in segment_urls:
             segment_urls.add(segment_url)
             try:
-              res = requests.get(segment_url, timeout=10)
+              res = requests.get(segment_url, timeout=15)
             except (ReadTimeout, ConnectionError):
               continue
             file_size += len(res.content)
@@ -80,8 +80,6 @@ def downloadStream(url, siteId, nickname):
             output_file.write(res.content)
             print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
       
-      time.sleep(3)
-
     except (ReadTimeout, ConnectionError):
       continue
 
