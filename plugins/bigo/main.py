@@ -3,6 +3,7 @@ import os
 import platform
 import time
 from urllib.parse import urljoin
+from requests.exceptions import ReadTimeout, ConnectionError
 
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
@@ -51,31 +52,38 @@ def downloadStream(url, siteId, nickname):
   start_time = time.time()
 
   while True:
-    base_url = url.rsplit('/', 1)[0] + '/'
-    res = requests.get(url)
-    playlist_content = res.text
-    
-    if '.ts' not in playlist_content:
-      if verify(siteId):
-        url, siteId, nickname = getPlaylist(siteId)
-        downloadStream(url, siteId, nickname)
+    try:
+      base_url = url.rsplit('/', 1)[0] + '/'
+      res = requests.get(url)
+      playlist_content = res.text
+      
+      if '.ts' not in playlist_content:
+        if verify(siteId):
+          url, siteId, nickname = getPlaylist(siteId)
+          downloadStream(url, siteId, nickname)
 
-    new_segment_lines = [
-      line.strip() for line in playlist_content.splitlines() if line.endswith('.ts')
-    ]
+      new_segment_lines = [
+        line.strip() for line in playlist_content.splitlines() if line.endswith('.ts')
+      ]
 
-    with open(output_path, 'ab') as output_file:
-      for new_segment_line in new_segment_lines:
-        segment_url = urljoin(base_url, new_segment_line)
-        if segment_url not in segment_urls:
-          segment_urls.add(segment_url)
-          res = requests.get(segment_url)
-          file_size += len(res.content)
-          elapsed_time = time.time() - start_time
-          output_file.write(res.content)
-          print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
-    
-    time.sleep(3)
+      with open(output_path, 'ab') as output_file:
+        for new_segment_line in new_segment_lines:
+          segment_url = urljoin(base_url, new_segment_line)
+          if segment_url not in segment_urls:
+            segment_urls.add(segment_url)
+            try:
+              res = requests.get(segment_url, timeout=10)
+            except (ReadTimeout, ConnectionError):
+              continue
+            file_size += len(res.content)
+            elapsed_time = time.time() - start_time
+            output_file.write(res.content)
+            print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
+      
+      time.sleep(3)
+
+    except (ReadTimeout, ConnectionError):
+      continue
 
 def main(id):
   if checkExists(id) == False:
