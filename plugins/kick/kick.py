@@ -12,7 +12,7 @@ def getPlaylist(username):
 
   # read cookies line for line
   cookies = []
-  with open('plugins/kick/kick-cookies', 'r') as f:
+  with open('cookies/kick', 'r') as f:
     for line in f:
       cookies.append(line.strip())
 

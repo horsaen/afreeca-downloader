@@ -17,7 +17,7 @@ def download(url, username):
   adapter = HTTPAdapter(max_retries=retry)
   session.mount('http://', adapter)
   session.mount('https://', adapter)
-  cookie = open('cookies', 'r').read().strip()
+  cookie = open('cookies/afreeca', 'r').read().strip()
   headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0",
     "Accept": "*/*",
@@ -44,10 +44,10 @@ def download(url, username):
 
   output_filename = username + '-' + getStationNo(username,'') + '-' + now + '-afreeca.ts'
 
-  output_path = 'downloads/' + username + '/' + output_filename
+  output_path = 'downloads/Afreeca/' + username + '/' + output_filename
 
-  if os.path.exists('downloads/' + username) is False:
-      os.makedirs('downloads/' + username)
+  if os.path.exists('downloads/Afreeca' + username) is False:
+      os.makedirs('downloads/Afreeca' + username)
 
   segment_urls = set()
 

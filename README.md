@@ -14,7 +14,7 @@ Rewrite of [afreeca-downloader-old](https://github.com/horsaen/afreecatv-downloa
 
 Clone repo
 ```bash
-git clone https://github.com/horsaen/afreeca-downloader.git
+git clone https://github.com/sillysolutions/afreeca-downloader.git
 ```
 
 Install deps
@@ -34,17 +34,17 @@ Sometimes cookies are needed to access certain data, they can be found in Develo
 Unless specified, cookies aren't needed
 
 ### afreeca
-- Copy only the VALUE of PdboxTicket into [cookies](cookies)
+- Copy only the VALUE of PdboxTicket into [cookies/afreeca](cookies/afreeca)
 - Should end up looking something like ``.A32.7bbT5``
 
 ### pandatv
-- Copy only the VALUE of sessKey into [panda-cookies](plugins/pandatv/panda-cookies)
+- Copy only the VALUE of sessKey into [cookies/panda](cookies/panda)
 - Should just look like a random string
 
 Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there doesn't seem to be a fix for this (more testing needed)
 
 ### kick
-This one requires a bit more cookies, please add the VALUES to [kick-cookies](plugins/kick/kick-cookies) in the following order:
+This one requires a bit more cookies, please add the VALUES to [cookies/kick](cookies/kick) in the following order:
 
 1. __cf_bm
 2. cf_clearance

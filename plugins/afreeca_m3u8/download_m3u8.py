@@ -52,10 +52,10 @@ def download_m3u8(link):
 
   bj_id, output_filename = getPlaylistInfo(link)
 
-  output_path = 'downloads/' + bj_id + '/' + output_filename
+  output_path = 'downloads/Afreeca/' + bj_id + '/' + output_filename
 
-  if os.path.exists('downloads/' + bj_id) is False:
-    os.makedirs('downloads/' + bj_id)
+  if os.path.exists('downloads/Afreeca/' + bj_id) is False:
+    os.makedirs('downloads/Afreeca/' + bj_id)
 
   segments = [
     line.strip() for line in playlist_content.splitlines() if line.endswith('.ts')

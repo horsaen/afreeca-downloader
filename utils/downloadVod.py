@@ -15,10 +15,10 @@ def downloadVod(url, output_filename, username):
     session.mount('http://', adapter)
     session.mount('https://', adapter)
 
-    output_path = 'downloads/' + username + '/' + output_filename
+    output_path = 'downloads/Afreeca/' + username + '/' + output_filename
 
-    if os.path.exists('downloads/' + username) is False:
-        os.makedirs('downloads/' + username)
+    if os.path.exists('downloads/Afreeca/' + username) is False:
+        os.makedirs('downloads/Afreeca/' + username)
 
     while True:
         headers = {}
