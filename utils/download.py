@@ -46,8 +46,8 @@ def download(url, username):
 
   output_path = 'downloads/Afreeca/' + username + '/' + output_filename
 
-  if os.path.exists('downloads/Afreeca' + username) is False:
-      os.makedirs('downloads/Afreeca' + username)
+  if os.path.exists('downloads/Afreeca/' + username) is False:
+      os.makedirs('downloads/Afreeca/' + username)
 
   segment_urls = set()
 
