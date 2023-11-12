@@ -35,6 +35,7 @@ def getPlaylist(id):
 
   return response.json()['data']['hls_src'], response.json()['data']['siteId'], response.json()['data']['nick_name']
 
+# this sometimes drops packets, there's literally nothing i can do about it -- server issue
 def downloadStream(url, siteId, nickname):
   segment_urls = set()
 
@@ -70,11 +71,11 @@ def downloadStream(url, siteId, nickname):
         for new_segment_line in new_segment_lines:
           segment_url = urljoin(base_url, new_segment_line)
           if segment_url not in segment_urls:
+            # try:
+            res = requests.get(segment_url, timeout=60)
             segment_urls.add(segment_url)
-            try:
-              res = requests.get(segment_url, timeout=15)
-            except (ReadTimeout, ConnectionError):
-              continue
+            # except (ReadTimeout, ConnectionError):
+              # continue
             file_size += len(res.content)
             elapsed_time = time.time() - start_time
             output_file.write(res.content)
