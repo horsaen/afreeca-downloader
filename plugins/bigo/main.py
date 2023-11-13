@@ -70,7 +70,7 @@ def downloadStream(url, siteId, nickname):
       if '.ts' not in playlist_content:
         if verify(siteId):
           url = getPlaylist(siteId)
-          siteId, nickname = getStreamData(id)
+          siteId, nickname = getStreamData(siteId)
           downloadStream(url, siteId, nickname)
 
       new_segment_lines = [
