@@ -10,32 +10,41 @@ from tools.formatDuration import format_duration
 
 from plugins.bigo.verify import checkExists, verify
 
-def getPlaylist(id):
+def getStreamData(id):
   url = "https://ta.bigo.tv/official_website/studio/getInternalStudioInfo"
 
   payload = "siteId=" + id + "&=verify%3D"
   headers = {
-      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
-      "Accept": "application/json, text/plain, */*",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Accept-Encoding": "gzip, deflate, br",
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "Origin": "https://www.bigo.tv",
-      "DNT": "1",
-      "Connection": "keep-alive",
-      "Referer": "https://www.bigo.tv/",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-site",
-      "Sec-GPC": "1",
-      "TE": "trailers"
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Origin": "https://www.bigo.tv",
+    "DNT": "1",
+    "Connection": "keep-alive",
+    "Referer": "https://www.bigo.tv/",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "Sec-GPC": "1",
+    "TE": "trailers"
   }
 
   response = requests.request("POST", url, data=payload, headers=headers)
 
-  return response.json()['data']['hls_src'], response.json()['data']['siteId'], response.json()['data']['nick_name']
+  return response.json()['data']['siteId'], response.json()['data']['nick_name']
 
-# this sometimes drops packets, there's literally nothing i can do about it -- server issue
+def getPlaylist(id):
+  url = "https://www.bigo.tv/OInterface/getVideoParam?bigoId=" + id
+  headers = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"
+  }
+
+  res = requests.request("GET", url, headers=headers)
+
+  return res.json()['data']['videoSrc']
+
 def downloadStream(url, siteId, nickname):
   segment_urls = set()
 
@@ -71,11 +80,11 @@ def downloadStream(url, siteId, nickname):
         for new_segment_line in new_segment_lines:
           segment_url = urljoin(base_url, new_segment_line)
           if segment_url not in segment_urls:
-            # try:
-            res = requests.get(segment_url, timeout=60)
-            segment_urls.add(segment_url)
-            # except (ReadTimeout, ConnectionError):
-              # continue
+            try:
+              res = requests.get(segment_url, timeout=60)
+              segment_urls.add(segment_url)
+            except (ReadTimeout, ConnectionError):
+              continue
             file_size += len(res.content)
             elapsed_time = time.time() - start_time
             output_file.write(res.content)
@@ -88,5 +97,7 @@ def main(id):
   if checkExists(id) == False:
     print('Streamer not found.')
     exit(1)
-  url, siteId, nickname = verify(id)
+  if verify(id) is True:
+    url = getPlaylist(id)
+    siteId, nickname = getStreamData(id)
   downloadStream(url, siteId, nickname)
