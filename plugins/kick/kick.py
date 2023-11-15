@@ -9,34 +9,32 @@ from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
 
 def getPlaylist(username):
+  url = "https://kick.com/api/v2/channels/" + username + "/livestream"
 
-  # read cookies line for line
   cookies = []
   with open('cookies/kick', 'r') as f:
     for line in f:
       cookies.append(line.strip())
 
-  url = "https://kick.com/api/v1/channels/" + username
-
   headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0',
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'en-US',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'X-Socket-ID': '82793.418280',
-    'DNT': '1',
-    'Connection': 'keep-alive',
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US",
+    "Accept-Encoding": "gzip, deflate, br",
+    "X-Socket-ID": "95721.13970",
+    "DNT": "1",
+    "Connection": "keep-alive",
     'Cookie': '__cf_bm=' + cookies[0] + '; cf_clearance=' + cookies[1] + '; kick_session=' + cookies[2] + ';',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-GPC': '1',
-    'TE': 'trailers'
-}
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-GPC": "1",
+    "TE": "trailers"
+  }
 
-  response = requests.get(url, headers=headers)
+  response = requests.request("GET", url, headers=headers)
 
-  return response.json()['playback_url']
+  return response.json()['data']['playback_url']
 
 def getVideo(username):
   url = getPlaylist(username)
