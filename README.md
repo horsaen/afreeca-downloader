@@ -6,9 +6,9 @@ Rewrite of [afreeca-downloader-old](https://github.com/horsaen/afreecatv-downloa
 
 ## Features
 - DVR-like recording, neatly sorted by user in a download directory
-- Downloading stream from start [experimental, but working]
+- Downloading stream from start
 - Multi-site support
-- Batch downloading [not implemented]
+- Batch downloading [BETA]
 
 ## Installation and Usage
 
@@ -64,3 +64,14 @@ the --mode flag supports the following arguements
 - kick
 - twitch
 - tiktok
+
+## Concurrent Downloads [BETA]
+
+You can download multiple streams at once by using the --concurrent flag
+
+Users to download from are specified in the [users](users) file, and follow the format of `username, platform`
+
+For now the supported sites are
+
+- afreeca
+- bigo

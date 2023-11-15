@@ -22,7 +22,7 @@ def getStationNo(username, pwd):
 
 def getMasterPlaylist(username, station_no, pwd):
   url = "https://live.afreecatv.com/afreeca/player_live_api.php"
-  cookie = open('cookies/afreeca', 'r').read().strip()
+  # cookie = open('cookies/afreeca', 'r').read().strip()
   payload = "bid=" + username + "&bno=" + station_no + "&type=aid&pwd=" + pwd + "&player_type=html5&stream_type=common&quality=master&mode=landing&from_api=0"
   # this one actively needs a cookie for 19+ streams
   headers = {
@@ -39,7 +39,7 @@ def getMasterPlaylist(username, station_no, pwd):
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "same-site",
     "Sec-GPC": "1",
-    "Cookie": "PdboxTicket=" + cookie,
+    # "Cookie": "PdboxTicket=" + cookie,
     "TE": "trailers",
   }
   res = requests.request("POST", url, data=payload, headers=headers)
@@ -94,3 +94,14 @@ def getVideoPlaylist(username, pwd):
   playlist = getStreamList(base, master)
 
   return str(base + '/' + playlist)
+
+
+def getUserData(username):
+  url = 'https://bjapi.afreecatv.com/api/' + username + '/station'
+  # this one just needs simple headers
+  headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0",
+    "Accept": "application/json, text/plain, */*"
+  }
+  res = requests.get(url, headers=headers)
+  return res.json()['station']['user_id'], res.json()['station']['user_nick'], str(res.json()['broad']['broad_no'])

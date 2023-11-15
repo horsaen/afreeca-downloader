@@ -1,5 +1,5 @@
 import requests
-from utils.getPlaylist import getVideoPlaylist, getStationNo
+from plugins.afreeca.getPlaylist import getVideoPlaylist, getStationNo
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 import time
@@ -8,7 +8,7 @@ import platform
 from urllib.parse import urljoin
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
-from utils.verify import verify
+from plugins.afreeca.verify import verify
 
 def download(url, username):
   # attempt to alleviate dropped connections [NEEDS TESTING]
@@ -86,3 +86,36 @@ def download(url, username):
                 print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
 
     time.sleep(3)
+
+def downloadVod(url, output_filename, username):
+   
+  # attempt to remedy dropped connections, works i think ???/
+  session = requests.Session()
+  retry = Retry(connect=3, backoff_factor=0.5)
+  adapter = HTTPAdapter(max_retries=retry)
+  session.mount('http://', adapter)
+  session.mount('https://', adapter)
+
+  output_path = 'downloads/Afreeca/' + username + '/' + output_filename
+
+  if os.path.exists('downloads/Afreeca/' + username) is False:
+      os.makedirs('downloads/Afreeca/' + username)
+
+  while True:
+      headers = {}
+      if os.path.exists(output_path):
+          headers['Range'] = f'bytes={os.path.getsize(output_path)}-'
+
+      res = session.get(url, stream=True)
+
+      with open(output_path, 'ab') as output_file:
+          for chunk in res.iter_content(chunk_size=1024):
+              output_file.write(chunk)
+              # does not include time as it is not a live stream, don't want to run mediainfo on every check
+              if len(chunk) != 1024 and getStationNo(username, '') is False:
+                  print('\nDownload complete.')
+                  exit()
+                  
+              print("\r" + f"Downloading to {output_filename} || {format_bytes(os.path.getsize(output_path))}    \x1b[?25l", end="", flush=True)
+
+      time.sleep(1)

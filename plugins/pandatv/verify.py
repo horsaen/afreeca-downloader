@@ -66,3 +66,40 @@ def verify(username):
         print('Unhandled error, trying again in 3 minutes.')
 
     time.sleep(180)
+
+def concurrentVerify(username):
+  url = "https://api.pandalive.co.kr/v1/live/play"
+
+  payload = 'action=watch&userId=' + username + '&password=&width=48&height=48&imageResize=crop&fanIconWidth=44&fanIconHeight=44&fanIconImageResize=crop'
+
+  while True:
+    res = requests.request("POST", url, data=payload, headers=headers)
+
+    if res.json()['errorData']['code'] == 'castEnd':
+
+      if res.json()['errorData'] is not None:
+        if res.json()['errorData']['code'] == 'needAdult':
+          return 'Err19'
+        elif res.json()['errorData']['code'] == 'castEnd':
+          continue
+      else:
+        return True
+
+    time.sleep(180)
+
+def getPlaylist(username):
+  url = "https://api.pandalive.co.kr/v1/live/play"
+
+  payload = 'action=watch&userId=' + username + '&password=&width=48&height=48&imageResize=crop&fanIconWidth=44&fanIconHeight=44&fanIconImageResize=crop'
+
+  res = requests.request("POST", url, data=payload, headers=headers)
+
+  response = requests.get(res.json()['PlayList']['hls'][0]['url'])
+
+  steams = []
+
+  for lines in response.text.splitlines():
+    if lines.startswith('https://'):
+      steams.append(lines)
+
+  return steams[0]
