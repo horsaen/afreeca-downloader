@@ -2,3 +2,4 @@ Requests==2.31.0
 simple_term_menu==1.6.1
 urllib3==1.26.15
 tabulate
+brotli
