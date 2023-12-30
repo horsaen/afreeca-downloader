@@ -53,6 +53,7 @@ This one requires a bit more cookies, please add the VALUES to [cookies/kick](co
 Mess up the order and it won't work
 
 Please note: still heavily in beta, their api sucks and the reliability is horrid, don't expect it to work too much
+New note: apparently it works a lot better if you're logged in, but needs more testing, keeping kick dl in the downloader for now
 
 ## Modes
 
