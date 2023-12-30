@@ -1,4 +1,5 @@
 # likely a cleaner way to work this, works for now
+# nice to have the threads separate in case something happens to api (?)
 from enum import verify
 import platform, time, requests, os, re
 from requests.adapters import HTTPAdapter
@@ -11,6 +12,7 @@ from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
 
 from plugins.afreeca import getVideoPlaylist, getUserData, concurrentVerify as afreecaVerify
+from plugins.bigo import concurrentVerify as bigoVerify, getPlaylist as bigoPlaylist, getStreamData as bigoData
 from plugins.panda import concurrentVerify as pandaVerify, getPlaylist as pandaPlaylist
 
 usernameList = []
@@ -34,6 +36,10 @@ def main():
         threads.append(thread)
       if platform == " panda":
         thread = Thread(target=panda, args=(instanceId, name))
+        thread.start()
+        threads.append(thread)
+      if platform == " bigo":
+        thread = Thread(target=bigo, args=(instanceId, name))
         thread.start()
         threads.append(thread)
   
@@ -149,7 +155,98 @@ def afreeca(instanceId, user):
             usernameList[instanceId] = ["Afreeca", user, nickname, format_bytes(file_size), format_duration(elapsed_time), output_filename]
 
 ##########################################################################
-################################# PANDA  ################################$
+#################################  BIGO  #################################
+##########################################################################
+
+def bigo(instanceId, user):
+  usernameList.insert(instanceId, ["Bigo", user, '', '', '', ''])
+
+  verify = bigoVerify(user)
+
+  if verify is True:
+    m3u8Url = bigoPlaylist(user)
+    siteId, nickname = bigoData(user)
+
+  segment_urls = set()
+  file_size = 0
+  start_time = time.time()
+
+  if os.path.exists('downloads/Bigo/' + user) == False:
+    os.makedirs('downloads/Bigo/' + user)
+
+  now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+  if platform.system() == 'Windows':
+    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+
+  output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+  output_path = 'downloads/Bigo/' + user + '/' + output_filename
+
+  while True:
+    base_url = m3u8Url.rsplit('/', 1)[0] + '/'
+
+    res = requests.get(m3u8Url)
+    playlist_content = res.text
+
+    new_segment_lines = [
+      line.strip() for line in playlist_content.splitlines() if line.endswith('.TS') or line.endswith('.ts')
+    ]
+
+    if '.ts' not in playlist_content.lower():
+      try:
+        usernameList[instanceId] = ["Bigo", user, "", 'Offline', 'Offline', 'Offline']
+
+        if bigoVerify(user) is True:
+
+          m3u8Url = bigoPlaylist(user)
+
+          segment_urls = set()
+          file_size = 0
+          start_time = time.time()
+
+          now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+          if platform.system() == 'Windows':
+            now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+          
+          output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+          output_path = 'downloads/Bigo/' + user + '/' + output_filename
+          
+          continue
+      except:
+        usernameList[instanceId] = ["Bigo", user, "", 'ERR', 'ERR', 'ERR']
+
+        if bigoVerify(user) is True:
+
+          m3u8Url = bigoPlaylist(user)
+
+          segment_urls = set()
+          file_size = 0
+          start_time = time.time()
+
+          now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+          if platform.system() == 'Windows':
+            now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+          
+          output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+          output_path = 'downloads/Bigo/' + user + '/' + output_filename
+          
+          continue
+
+    with open(output_path, 'ab') as output_file:
+        for new_segment_line in new_segment_lines:
+          segment_url = urljoin(base_url, new_segment_line)
+          if segment_url not in segment_urls:
+            segment_urls.add(segment_url)
+            try:
+              res = requests.get(segment_url, timeout=15)
+            except (requests.ReadTimeout, ConnectionError):
+              continue
+            file_size += len(res.content)
+            elapsed_time = time.time() - start_time
+            output_file.write(res.content)
+            usernameList[instanceId] = ["Bigo", user, nickname, format_bytes(file_size), format_duration(elapsed_time), output_filename]
+
+##########################################################################
+################################# PANDA  #################################
 ##########################################################################
             
 def panda(instanceId, user):
