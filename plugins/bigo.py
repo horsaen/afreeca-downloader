@@ -107,7 +107,7 @@ def getStreamData(id):
 def getPlaylist(id):
   url = "https://ta.bigo.tv/official_website/studio/getInternalStudioInfo"
 
-  payload = "siteId=loveyouarge&=verify%3D"
+  payload = "siteId=" + id + "&=verify%3D"
   headers = {
     "cookie": "www_random_gray=52",
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
