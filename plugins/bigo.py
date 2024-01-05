@@ -105,14 +105,43 @@ def getStreamData(id):
   return response.json()['data']['siteId'], response.json()['data']['nick_name']
 
 def getPlaylist(id):
-  url = "https://www.bigo.tv/OInterface/getVideoParam?bigoId=" + id
+  url = "https://ta.bigo.tv/official_website/studio/getInternalStudioInfo"
+
+  payload = "siteId=loveyouarge&=verify%3D"
   headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"
+    "cookie": "www_random_gray=52",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Origin": "https://www.bigo.tv",
+    "DNT": "1",
+    "Connection": "keep-alive",
+    "Referer": "https://www.bigo.tv/",
+    "Cookie": "www_random_gray=96",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "Sec-GPC": "1",
+    "TE": "trailers"
   }
 
-  res = requests.request("GET", url, headers=headers)
+  response = requests.request("POST", url, data=payload, headers=headers)
 
-  return res.json()['data']['videoSrc']
+  return response.json()['data']['hls_src']
+
+
+# no longer working
+# def getPlaylist(id):
+#   url = "https://www.bigo.tv/OInterface/getVideoParam?bigoId=" + id
+#   headers = {
+#     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"
+#   }
+
+#   res = requests.request("GET", url, headers=headers)
+
+#   return res.json()['data']['videoSrc']
 
 def downloadStream(url, siteId, nickname):
   segment_urls = set()
