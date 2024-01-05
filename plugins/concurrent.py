@@ -65,6 +65,13 @@ def afreeca(instanceId, user):
   usernameList.insert(instanceId, ["Afreeca", user, '', '', '', ''])
 
   if afreecaVerify(user) is True:
+
+    # attempt to alleviate dropped connections [NEEDS TESTING]
+    session = requests.Session()
+    retry = Retry(connect=5, backoff_factor=0.5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
   
     m3u8Url = getVideoPlaylist(user, '')
     username, nickname, station_no = getUserData(user)
@@ -86,7 +93,7 @@ def afreeca(instanceId, user):
     while True:
       base_url = m3u8Url.rsplit('/', 1)[0] + '/'
 
-      res = requests.get(m3u8Url)
+      res = session.get(m3u8Url)
       playlist_content = res.text
 
       new_segment_lines = [
@@ -146,13 +153,15 @@ def afreeca(instanceId, user):
           if segment_url not in segment_urls:
             segment_urls.add(segment_url)
             try:
-              res = requests.get(segment_url, timeout=15)
+              res = session.get(segment_url, timeout=15)
             except (requests.ReadTimeout, ConnectionError):
               continue
             file_size += len(res.content)
             elapsed_time = time.time() - start_time
             output_file.write(res.content)
             usernameList[instanceId] = ["Afreeca", user, nickname, format_bytes(file_size), format_duration(elapsed_time), output_filename]
+      
+      time.sleep(3)
 
 ##########################################################################
 #################################  BIGO  #################################
