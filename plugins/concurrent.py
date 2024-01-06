@@ -173,86 +173,94 @@ def bigo(instanceId, user):
   verify = bigoVerify(user)
 
   if verify is True:
+
+    # attempt to alleviate dropped connections [NEEDS TESTING]
+    session = requests.Session()
+    retry = Retry(connect=5, backoff_factor=0.5)
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
     m3u8Url = bigoPlaylist(user)
     siteId, nickname = bigoData(user)
 
-  segment_urls = set()
-  file_size = 0
-  start_time = time.time()
+    segment_urls = set()
+    file_size = 0
+    start_time = time.time()
 
-  if os.path.exists('downloads/Bigo/' + user) == False:
-    os.makedirs('downloads/Bigo/' + user)
+    if os.path.exists('downloads/Bigo/' + user) == False:
+      os.makedirs('downloads/Bigo/' + user)
 
-  now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-  if platform.system() == 'Windows':
-    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+    now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+    if platform.system() == 'Windows':
+      now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
 
-  output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
-  output_path = 'downloads/Bigo/' + user + '/' + output_filename
+    output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+    output_path = 'downloads/Bigo/' + user + '/' + output_filename
 
-  while True:
-    base_url = m3u8Url.rsplit('/', 1)[0] + '/'
+    while True:
+      base_url = m3u8Url.rsplit('/', 1)[0] + '/'
 
-    res = requests.get(m3u8Url)
-    playlist_content = res.text
+      res = session.get(m3u8Url)
+      playlist_content = res.text
 
-    new_segment_lines = [
-      line.strip() for line in playlist_content.splitlines() if line.endswith('.TS') or line.endswith('.ts')
-    ]
+      new_segment_lines = [
+        line.strip() for line in playlist_content.splitlines() if line.endswith('.TS') or line.endswith('.ts')
+      ]
 
-    if '.ts' not in playlist_content.lower():
-      try:
-        usernameList[instanceId] = ["Bigo", user, "", 'Offline', 'Offline', 'Offline']
+      if '.ts' not in playlist_content.lower():
+        try:
+          usernameList[instanceId] = ["Bigo", user, "", 'Offline', 'Offline', 'Offline']
 
-        if bigoVerify(user) is True:
+          if bigoVerify(user) is True:
 
-          m3u8Url = bigoPlaylist(user)
+            m3u8Url = bigoPlaylist(user)
 
-          segment_urls = set()
-          file_size = 0
-          start_time = time.time()
+            segment_urls = set()
+            file_size = 0
+            start_time = time.time()
 
-          now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-          if platform.system() == 'Windows':
-            now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-          
-          output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
-          output_path = 'downloads/Bigo/' + user + '/' + output_filename
-          
-          continue
-      except:
-        usernameList[instanceId] = ["Bigo", user, "", 'ERR', 'ERR', 'ERR']
+            now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+            if platform.system() == 'Windows':
+              now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+            
+            output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+            output_path = 'downloads/Bigo/' + user + '/' + output_filename
+            
+            continue
+        except:
+          usernameList[instanceId] = ["Bigo", user, "", 'ERR', 'ERR', 'ERR']
 
-        if bigoVerify(user) is True:
+          if bigoVerify(user) is True:
 
-          m3u8Url = bigoPlaylist(user)
+            m3u8Url = bigoPlaylist(user)
 
-          segment_urls = set()
-          file_size = 0
-          start_time = time.time()
+            segment_urls = set()
+            file_size = 0
+            start_time = time.time()
 
-          now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-          if platform.system() == 'Windows':
-            now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-          
-          output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
-          output_path = 'downloads/Bigo/' + user + '/' + output_filename
-          
-          continue
+            now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+            if platform.system() == 'Windows':
+              now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+            
+            output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
+            output_path = 'downloads/Bigo/' + user + '/' + output_filename
+            
+            continue
 
-    with open(output_path, 'ab') as output_file:
-        for new_segment_line in new_segment_lines:
-          segment_url = urljoin(base_url, new_segment_line)
-          if segment_url not in segment_urls:
-            segment_urls.add(segment_url)
-            try:
-              res = requests.get(segment_url, timeout=15)
-            except (requests.ReadTimeout, ConnectionError):
-              continue
-            file_size += len(res.content)
-            elapsed_time = time.time() - start_time
-            output_file.write(res.content)
-            usernameList[instanceId] = ["Bigo", user, nickname, format_bytes(file_size), format_duration(elapsed_time), output_filename]
+      with open(output_path, 'ab') as output_file:
+          for new_segment_line in new_segment_lines:
+            segment_url = urljoin(base_url, new_segment_line)
+            if segment_url not in segment_urls:
+              segment_urls.add(segment_url)
+              try:
+                res = session.get(segment_url, timeout=15)
+              except (requests.ReadTimeout, ConnectionError):
+                continue
+              file_size += len(res.content)
+              elapsed_time = time.time() - start_time
+              output_file.write(res.content)
+              usernameList[instanceId] = ["Bigo", user, nickname, format_bytes(file_size), format_duration(elapsed_time), output_filename]
 
 ##########################################################################
 ################################# PANDA  #################################
