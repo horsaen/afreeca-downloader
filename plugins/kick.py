@@ -1,9 +1,14 @@
 import requests, time, platform, os
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
 
 def getUrl(username):
+
+  
+
   url = "https://kick.com/api/v1/channels/" + username
 
   cookies = []
@@ -46,6 +51,14 @@ def getStreams(username):
   return stream[0]
 
 def downloadStream(username):
+
+  # attempt to alleviate dropped connections [NEEDS TESTING]
+  session = requests.Session()
+  retry = Retry(connect=5, backoff_factor=0.5)
+  adapter = HTTPAdapter(max_retries=retry)
+  session.mount('http://', adapter)
+  session.mount('https://', adapter)
+
   url = getStreams(username)
 
   now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
@@ -78,8 +91,10 @@ def downloadStream(username):
           segment_url = new_segment_line
           if segment_url not in segment_urls:
             segment_urls.add(segment_url)
-            response = requests.get(segment_url)
+            response = session.get(segment_url)
             file_size += len(response.content)
             elapsed_time = time.time() - start_time
             output_file.write(response.content)
             print("\r" + f"Downloading to {output_filename} || {format_duration(elapsed_time)} @ {format_bytes(file_size)}             \x1b[?25l", end="", flush=True)
+
+    time.sleep(3)
