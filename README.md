@@ -80,3 +80,4 @@ For now the supported sites are
 
 - afreeca
 - bigo
+- panda
