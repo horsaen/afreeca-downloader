@@ -55,6 +55,10 @@ Mess up the order and it won't work
 Please note: still heavily in beta, their api sucks and the reliability is horrid, don't expect it to work too much
 New note: apparently it works a lot better if you're logged in, but needs more testing, keeping kick dl in the downloader for now
 
+### FlexTV
+- Copy only the VALUE of flx_oauth_access into [cookies/flex](cookies/flex)
+- Should just look like a random string
+
 ## Modes
 
 the --mode flag supports the following arguements
@@ -63,7 +67,7 @@ the --mode flag supports the following arguements
 - panda
 - bigo
 - kick
-- twitch
+- flex
 - tiktok
 
 ## Concurrent Downloads [BETA]

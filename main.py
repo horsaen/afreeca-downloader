@@ -4,6 +4,7 @@ import os
 from plugins.afreeca import mainProcess as afreeca
 from plugins.bigo import mainProcess as bigo
 from plugins.concurrent import main as concurrent
+from plugins.flex import mainProcess as flex
 from plugins.kick import downloadStream as kick
 from plugins.panda import mainProcess as panda
 from plugins.tiktok import mainProcess as tiktok
@@ -38,12 +39,14 @@ def main(args):
     if args.from_start is True: mode = "fromStart"
     elif args.playlist is True: mode = "playlist"
     afreeca(mode, username, pwd)
-  elif args.mode == 'panda':
-    panda(username)
   elif args.mode == 'bigo':
     bigo(username)
+  elif args.mode == 'flex':
+    flex(username)
   elif args.mode == 'kick':
     kick(username)
+  elif args.mode == 'panda':
+    panda(username)
   elif args.mode == 'tiktok':
     tiktok(username)
   # elif args.mode == 'twitch':
