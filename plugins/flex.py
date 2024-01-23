@@ -1,4 +1,4 @@
-import requests, time, os
+import requests, time, os, platform
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -65,7 +65,12 @@ def download(id):
   url, userId, username = getPlaylist(id)
   url = getStream(url)
 
-  output_filename = username + '-' + userId + '-flex.ts'
+  now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
+    
+  if platform.system() == 'Windows':
+    now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
+
+  output_filename = username + '-' + userId + '-' + now + '-flex.ts'
 
   output_path = 'downloads/Flex/' + username + '/' + output_filename
 
