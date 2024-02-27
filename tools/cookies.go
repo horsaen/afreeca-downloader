@@ -2,11 +2,10 @@ package tools
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 )
 
-func LoadCookies(platform string) []string {
+func LoadCookies(platform string) [3]string {
 	home, _ := os.UserHomeDir()
 
 	configBase := home + "/.afreeca-downloader"
@@ -17,19 +16,14 @@ func LoadCookies(platform string) []string {
 	scanner := bufio.NewScanner(file)
 
 	scanner.Split(bufio.ScanLines)
-	var cookies []string
+	cookies := [3]string{" ", " ", " "}
 
+	index := 0
 	for scanner.Scan() {
-		cookies = append(cookies, scanner.Text())
+		cookies[index] = scanner.Text()
 	}
 
 	file.Close()
-
-	for _, line := range cookies {
-		fmt.Println(line)
-	}
-
-	fmt.Println(cookies)
 
 	return cookies
 

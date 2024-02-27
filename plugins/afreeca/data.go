@@ -104,7 +104,7 @@ func MasterPlaylist(bjId string, broad_no int, password string) string {
 
 	req, err := http.NewRequest("POST", url, payload)
 
-	cookies := tools.LoadCookies("afeeca")
+	cookies := tools.LoadCookies("afreeca")
 
 	req.Header.Add("Cookie", "PdboxTicket="+cookies[0])
 	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/118.0")
