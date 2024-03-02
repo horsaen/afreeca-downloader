@@ -78,8 +78,6 @@ func CheckOnline(userId string) bool {
 
 	json.Unmarshal(bodyText, &user)
 
-	fmt.Print(user)
-
 	if user.ErrorData.Code == "needAdult" {
 		fmt.Println("Stream is 19+ and unable to retrieve stream URL, input a valid sessKey in panda-cookies.")
 		os.Exit(2)

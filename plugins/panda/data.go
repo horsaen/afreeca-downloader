@@ -65,7 +65,6 @@ func GetMaster(userId string) string {
 
 	json.Unmarshal(bodyText, &user)
 
-	fmt.Println(string(bodyText))
 	return user.Playlist.Hls[0].Url
 }
 
