@@ -172,7 +172,7 @@ func StreamList(baseUrl string, masterUrl string) string {
 		}
 	}
 
-	return playlists[len(playlists)-1]
+	return playlists[0]
 
 }
 
