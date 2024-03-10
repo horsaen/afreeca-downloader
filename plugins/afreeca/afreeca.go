@@ -6,6 +6,14 @@ import (
 	"os"
 )
 
+func Playlist() {
+	inputPlaylists := GetPlaylists()
+
+	playlists := ParsePlaylists(inputPlaylists)
+
+	DownloadPlaylists(playlists)
+}
+
 func Start(bjId string) {
 	tools.Exists("downloads/Afreeca")
 

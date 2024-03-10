@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -95,5 +97,42 @@ func Download(bjId string, nickname string, playlist string) bool {
 		}
 
 		time.Sleep(3 * time.Second)
+	}
+}
+
+func DownloadPlaylists(playlists []string) {
+	now := time.Now().Format("200601021504")
+	tools.Exists("downloads/Afreeca/" + now)
+
+	vodBase := "https://vod-archive-kr-cdn-z01.afreecatv.com"
+	length := len(playlists)
+
+	for i, playlist := range playlists {
+		var downloaded = 0
+		segments := []string{}
+
+		parseUrl, _ := url.Parse(playlist)
+		resp, _ := http.Get(playlist)
+
+		scanner := bufio.NewScanner(resp.Body)
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasSuffix(line, ".ts") {
+				segments = append(segments, vodBase+path.Dir(parseUrl.Path)+"/"+line)
+			}
+		}
+
+		filename := "downloads/Afreeca/" + now + "/" + strconv.Itoa(i+1) + ".ts"
+		out, _ := os.Create(filename)
+
+		for _, segment := range segments {
+			resp, _ := http.Get(segment)
+			downloaded += 1
+			output := fmt.Sprintf("\rDownloaded %d segments out of %d || Playlist %d of %d", downloaded, len(segments), i+1, length)
+			fmt.Print(output)
+			io.Copy(out, resp.Body)
+		}
+
 	}
 }

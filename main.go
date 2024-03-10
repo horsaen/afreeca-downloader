@@ -20,17 +20,18 @@ func main() {
 
 	userArg := flag.String("username", "", "Username of the streamer")
 	mode := flag.String("mode", "afreeca", "Mode")
+	playlist := flag.Bool("playlist", false, "Download playlist")
 	version := flag.Bool("version", false, "Print version")
 
 	flag.Parse()
 
 	if *version {
 		fmt.Println("https://github.com/horsaen/afreeca-downloader")
-		fmt.Println("v2.0.0")
+		fmt.Println("v2.0.1")
 		os.Exit(0)
 	}
 
-	if *userArg != "" {
+	if *userArg != "" || *playlist {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
@@ -41,7 +42,11 @@ func main() {
 
 	switch *mode {
 	case "afreeca":
-		afreeca.Start(username)
+		if *playlist {
+			afreeca.Playlist()
+		} else {
+			afreeca.Start(username)
+		}
 	case "bigo":
 		bigo.Start(username)
 	case "flex":
