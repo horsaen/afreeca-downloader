@@ -15,8 +15,6 @@ func Playlist() {
 }
 
 func Start(bjId string) {
-	tools.Exists("downloads/Afreeca")
-
 	if !CheckExists(bjId) {
 		fmt.Printf("User %s not found.\n", bjId)
 		os.Exit(1)
@@ -29,4 +27,14 @@ func Start(bjId string) {
 
 		Download(bjId, nickname, url)
 	}
+}
+
+func Vod(TitleNo string) {
+	tools.Exists("downloads/Afreeca/Vods")
+
+	sourceFiles := GetVodFiles(TitleNo)
+
+	files := ParseVods(sourceFiles)
+
+	DownloadVods(TitleNo, files)
 }

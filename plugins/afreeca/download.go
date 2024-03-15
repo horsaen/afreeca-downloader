@@ -136,3 +136,43 @@ func DownloadPlaylists(playlists []string) {
 
 	}
 }
+
+func DownloadVods(TitleNo string, files []string) {
+	tools.Exists("downloads/Afreeca/Vods/" + TitleNo)
+
+	vodBase := "https://vod-archive-global-cdn-z02.afreecatv.com"
+	length := len(files)
+
+	for i, file := range files {
+		var downloaded = 0
+		segments := []string{}
+
+		parseUrl, _ := url.Parse(file)
+		resp, _ := http.Get(file)
+
+		scanner := bufio.NewScanner(resp.Body)
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasSuffix(line, ".ts") {
+				segments = append(segments, vodBase+path.Dir(parseUrl.Path)+"/"+line)
+			}
+		}
+
+		filename := "downloads/Afreeca/Vods/" + TitleNo + "/" + strconv.Itoa(i+1) + ".ts"
+		out, err := os.Create(filename)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, segment := range segments {
+			resp, _ := http.Get(segment)
+			downloaded += 1
+			output := fmt.Sprintf("\rDownloaded %d segments out of %d || File %d of %d", downloaded, len(segments), i+1, length)
+			fmt.Print(output)
+			io.Copy(out, resp.Body)
+		}
+	}
+
+}

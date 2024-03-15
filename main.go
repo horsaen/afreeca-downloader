@@ -18,20 +18,21 @@ func main() {
 
 	var username string
 
-	userArg := flag.String("username", "", "Username of the streamer")
 	mode := flag.String("mode", "afreeca", "Mode")
+	userArg := flag.String("username", "", "Streamer username")
 	playlist := flag.Bool("playlist", false, "Download playlist")
+	vod := flag.Bool("vod", false, "Download vod")
 	version := flag.Bool("version", false, "Print version")
 
 	flag.Parse()
 
 	if *version {
 		fmt.Println("https://github.com/horsaen/afreeca-downloader")
-		fmt.Println("v2.0.1")
+		fmt.Println("v2.0.2")
 		os.Exit(0)
 	}
 
-	if *userArg != "" || *playlist {
+	if *userArg != "" || *playlist || *vod {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
@@ -42,8 +43,14 @@ func main() {
 
 	switch *mode {
 	case "afreeca":
+		tools.Exists("downloads/Afreeca")
 		if *playlist {
 			afreeca.Playlist()
+		} else if *vod {
+			var TitleNo string
+			fmt.Println("Enter title number:")
+			fmt.Scan(&TitleNo)
+			afreeca.Vod(TitleNo)
 		} else {
 			afreeca.Start(username)
 		}

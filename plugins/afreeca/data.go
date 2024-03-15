@@ -32,6 +32,15 @@ type Master struct {
 	} `json:"CHANNEL"`
 }
 
+type VodStruct struct {
+	Data struct {
+		BjId  string `json:"bj_id"`
+		Files []struct {
+			File string `json:"file"`
+		}
+	} `json:"data"`
+}
+
 func UserData(bjId string) (string, int) {
 	url := "https://bjapi.afreecatv.com/api/" + bjId + "/station"
 
@@ -173,7 +182,6 @@ func StreamList(baseUrl string, masterUrl string) string {
 	}
 
 	return playlists[0]
-
 }
 
 func GetStream(bjId string, broad_no int, password string) string {
@@ -182,5 +190,36 @@ func GetStream(bjId string, broad_no int, password string) string {
 	master := MasterPlaylist(bjId, broad_no, "")
 
 	return base + "/" + StreamList(base, master)
+}
 
+func GetVodFiles(titleNo string) []string {
+	url := "https://api.m.afreecatv.com/station/video/a/view"
+
+	payload := strings.NewReader("nTitleNo=" + titleNo + "&nApiLevel=10&nPlaylistIdx=0")
+
+	client := &http.Client{}
+
+	req, _ := http.NewRequest("POST", url, payload)
+
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bodyText, _ := io.ReadAll(resp.Body)
+
+	var vod VodStruct
+
+	json.Unmarshal(bodyText, &vod)
+
+	var files []string
+
+	for _, file := range vod.Data.Files {
+		files = append(files, file.File)
+	}
+
+	return files
 }
