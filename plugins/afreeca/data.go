@@ -201,6 +201,9 @@ func GetVodFiles(titleNo string) []string {
 
 	req, _ := http.NewRequest("POST", url, payload)
 
+	cookies := tools.LoadCookies("afreeca")
+
+	req.Header.Add("Cookie", "PdboxTicket="+cookies[0])
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
