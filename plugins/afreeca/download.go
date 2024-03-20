@@ -15,7 +15,99 @@ import (
 	"time"
 )
 
-func Download(bjId string, nickname string, playlist string) bool {
+func ConcurrentDownload(user *[]string, nickname string, broad_no string, playlist string) {
+	bjId := (*user)[0]
+	tools.Exists("downloads/Afreeca/" + bjId)
+
+	client := &http.Client{}
+
+	req, _ := http.NewRequest("GET", playlist, nil)
+
+	parsedUrl, _ := url.Parse(playlist)
+
+	pathSegments := strings.Split(parsedUrl.Path, "/")
+
+	newPath := strings.Join(pathSegments[:len(pathSegments)-1], "/")
+
+	filename := nickname + "-" + bjId + "-" + broad_no + "-" + time.Now().Format("200601021504") + "-afreeca.ts"
+
+	out, _ := os.Create("downloads/Afreeca/" + bjId + "/" + filename)
+
+	playlistUrls := make(map[string]bool)
+
+	var bytes int64 = 0
+	var start_time = time.Now()
+
+	for {
+		resp, err := client.Do(req)
+
+		if err != nil {
+			(*user)[2] = "error"
+			(*user)[3] = "error"
+			(*user)[4] = err.Error()
+			return
+		}
+
+		bodyBytes, _ := io.ReadAll(resp.Body)
+
+		bodyText := string(bodyBytes)
+
+		if !strings.Contains(bodyText, ".TS") {
+			(*user)[2] = "Offline"
+			(*user)[3] = "Offline"
+			(*user)[4] = "Offline"
+			Concurrent(user)
+		}
+
+		scanner := bufio.NewScanner(strings.NewReader(bodyText))
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasSuffix(line, ".TS") {
+
+				playlistUrl := fmt.Sprintf("%s://%s%s/%s", parsedUrl.Scheme, parsedUrl.Host, newPath, line)
+
+				if !playlistUrls[playlistUrl] {
+
+					resp, err := http.Get(playlistUrl)
+
+					if err != nil {
+						(*user)[2] = "error"
+						(*user)[3] = "error"
+						(*user)[4] = err.Error()
+						return
+					}
+
+					bytes += resp.ContentLength
+					elapsed_time := time.Since(start_time)
+
+					(*user)[2] = tools.FormatBytes(bytes)
+					(*user)[3] = tools.FormatTime(elapsed_time)
+					(*user)[4] = filename
+
+					_, err = io.Copy(out, resp.Body)
+
+					if err != nil {
+						(*user)[2] = "error"
+						(*user)[3] = "error"
+						(*user)[4] = err.Error()
+						return
+					}
+
+					playlistUrls[playlistUrl] = true
+				}
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+		}
+
+		time.Sleep(3 * time.Second)
+	}
+}
+
+func Download(bjId string, nickname string, broad_no string, playlist string) bool {
 	tools.Exists("downloads/Afreeca/" + bjId)
 
 	client := &http.Client{}
@@ -32,7 +124,7 @@ func Download(bjId string, nickname string, playlist string) bool {
 
 	newPath := strings.Join(pathSegments[:len(pathSegments)-1], "/")
 
-	filename := nickname + "-" + bjId + "-" + time.Now().Format("200601021504") + "-afreeca.ts"
+	filename := nickname + "-" + bjId + "-" + broad_no + "-" + time.Now().Format("200601021504") + "-afreeca.ts"
 
 	out, _ := os.Create("downloads/Afreeca/" + bjId + "/" + filename)
 

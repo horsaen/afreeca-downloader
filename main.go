@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
+	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
@@ -20,26 +21,29 @@ func main() {
 
 	mode := flag.String("mode", "afreeca", "Mode")
 	userArg := flag.String("username", "", "Streamer username")
-	playlist := flag.Bool("playlist", false, "Download playlist")
-	vod := flag.Bool("vod", false, "Download vod")
+	playlist := flag.Bool("playlist", false, "Download bot playlists")
+	concurrently := flag.Bool("concurrent", false, "Download streams concurrently")
+	vod := flag.Bool("vod", false, "Download Afreeca vod")
 	version := flag.Bool("version", false, "Print version")
 
 	flag.Parse()
 
 	if *version {
-		fmt.Println("https://github.com/horsaen/afreeca-downloader")
-		fmt.Println("v2.0.2")
-		os.Exit(0)
+		tools.Version()
 	}
 
-	if *userArg != "" || *playlist || *vod {
+	tools.Exists("downloads")
+
+	if *concurrently {
+		concurrent.Start()
+	}
+
+	if *userArg != "" || *playlist || *vod || *concurrently {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
 		fmt.Scan(&username)
 	}
-
-	tools.Exists("downloads")
 
 	switch *mode {
 	case "afreeca":

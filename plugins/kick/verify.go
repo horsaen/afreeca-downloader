@@ -10,6 +10,15 @@ import (
 	"time"
 )
 
+func ConcurrentCheck(userId string) bool {
+	for {
+		if CheckOnline(userId) {
+			return true
+		}
+		time.Sleep(3 * time.Minute)
+	}
+}
+
 func DvrCheck(userId string) bool {
 	for {
 		if CheckOnline(userId) {

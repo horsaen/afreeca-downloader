@@ -6,6 +6,25 @@ import (
 	"os"
 )
 
+func Concurrent(user *[]string) {
+	tools.Exists("downloads/Panda")
+
+	if !CheckExists((*user)[0]) {
+		(*user)[2] = "Not found"
+		(*user)[3] = "Not found"
+		(*user)[4] = "Not found"
+		return
+	}
+
+	if ConcurrentCheck((*user)[0]) {
+		masterPlaylist := GetMaster((*user)[0])
+
+		url := ParseMaster(masterPlaylist)
+
+		ConcurrentDownload(user, url)
+	}
+}
+
 func Start(userId string) {
 	tools.Exists("downloads/Panda")
 

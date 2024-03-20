@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"os"
+	"strconv"
 )
 
-func Playlist() {
-	inputPlaylists := GetPlaylists()
+func Concurrent(user *[]string) {
+	tools.Exists("downloads/Afreeca")
 
-	playlists := ParsePlaylists(inputPlaylists)
+	if !CheckExists((*user)[0]) {
+		(*user)[2] = "Not found"
+		(*user)[3] = "Not found"
+		(*user)[4] = "Not found"
+		return
+	}
 
-	DownloadPlaylists(playlists)
+	if ConcurrentCheck((*user)[0]) {
+		nickname, broad_no := UserData((*user)[0])
+
+		url := GetStream((*user)[0], broad_no, "")
+
+		ConcurrentDownload(user, nickname, strconv.Itoa(broad_no), url)
+	}
 }
 
 func Start(bjId string) {
@@ -25,8 +37,16 @@ func Start(bjId string) {
 
 		url := GetStream(bjId, broad_no, "")
 
-		Download(bjId, nickname, url)
+		Download(bjId, nickname, strconv.Itoa(broad_no), url)
 	}
+}
+
+func Playlist() {
+	inputPlaylists := GetPlaylists()
+
+	playlists := ParsePlaylists(inputPlaylists)
+
+	DownloadPlaylists(playlists)
 }
 
 func Vod(TitleNo string) {

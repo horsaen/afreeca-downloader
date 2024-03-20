@@ -46,6 +46,15 @@ func CheckExists(bjId string) bool {
 	}
 }
 
+func ConcurrentCheck(bjId string) bool {
+	for {
+		if CheckOnline(bjId) {
+			return true
+		}
+		time.Sleep(3 * time.Minute)
+	}
+}
+
 func DvrCheck(bjId string) bool {
 	for {
 		if CheckOnline(bjId) {
