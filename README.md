@@ -31,6 +31,24 @@ Install
 go install
 ```
 
+## Concurrent Downloads
+
+![concurrent screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/concurrent.png)
+
+For now supports all sites other than TikTok
+
+To add users, open the users file @ `.afreeca-downloader/users`, and input users following the format
+
+USERNAME, PLATFORM
+
+```
+user1, afreeca
+user2, bigo
+user3, flex
+```
+
+Then simply run the program using -concurrent
+
 ## Set Cookies
 
 In order to function correctly, sometimes sites will require that you use cookies in order to validate network requests.
