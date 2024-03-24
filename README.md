@@ -2,6 +2,8 @@
 
 A simple tool to download streams from afreeca and other sites
 
+![tui screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/tui.png)
+
 ## Supported Sites
 
 The -mode flag supports the following sites
