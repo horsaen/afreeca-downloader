@@ -194,7 +194,7 @@ func Download(bjId string, nickname string, broad_no string, playlist string) bo
 
 func DownloadPlaylists(playlists []string) {
 	now := time.Now().Format("200601021504")
-	tools.Exists("downloads/Afreeca/" + now)
+	tools.Exists("downloads/Afreeca/Playlists/" + now)
 
 	vodBase := "https://vod-archive-kr-cdn-z01.afreecatv.com"
 	length := len(playlists)

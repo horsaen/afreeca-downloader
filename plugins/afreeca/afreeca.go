@@ -41,8 +41,8 @@ func Start(bjId string) {
 	}
 }
 
-func Playlist() {
-	inputPlaylists := GetPlaylists()
+func Playlist(inputPlaylists []string) {
+	tools.Exists("downloads/Afreeca/Playlists")
 
 	playlists := ParsePlaylists(inputPlaylists)
 

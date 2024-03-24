@@ -11,15 +11,20 @@ import (
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/tiktok"
 	"horsaen/afreeca-downloader/tools"
+	"horsaen/afreeca-downloader/views"
+	"log"
 	"os"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
 	tools.InitConfDir()
+	tools.Exists("downloads")
 
 	var username string
 
-	mode := flag.String("mode", "afreeca", "Mode")
+	mode := flag.String("mode", "tui", "Mode")
 	userArg := flag.String("username", "", "Streamer username")
 	playlist := flag.Bool("playlist", false, "Download bot playlists")
 	concurrently := flag.Bool("concurrent", false, "Download streams concurrently")
@@ -32,13 +37,11 @@ func main() {
 		tools.Version()
 	}
 
-	tools.Exists("downloads")
-
 	if *concurrently {
 		concurrent.Start()
 	}
 
-	if *userArg != "" || *playlist || *vod || *concurrently {
+	if *userArg != "" || *playlist || *vod || *concurrently || *mode == "tui" {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
@@ -49,7 +52,8 @@ func main() {
 	case "afreeca":
 		tools.Exists("downloads/Afreeca")
 		if *playlist {
-			afreeca.Playlist()
+			inputPlaylists := afreeca.GetPlaylists()
+			afreeca.Playlist(inputPlaylists)
 		} else if *vod {
 			var TitleNo string
 			fmt.Println("Enter title number:")
@@ -68,6 +72,11 @@ func main() {
 		panda.Start(username)
 	case "tiktok":
 		tiktok.Start(username)
+	case "tui":
+		p := tea.NewProgram(views.InitialModel())
+		if _, err := p.Run(); err != nil {
+			log.Fatal(err)
+		}
 	default:
 		fmt.Println("Mode not supported, exiting.")
 		os.Exit(1)
