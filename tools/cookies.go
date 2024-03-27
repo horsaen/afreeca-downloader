@@ -21,6 +21,7 @@ func LoadCookies(platform string) [3]string {
 	index := 0
 	for scanner.Scan() {
 		cookies[index] = scanner.Text()
+		index++
 	}
 
 	file.Close()

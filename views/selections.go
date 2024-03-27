@@ -2,7 +2,6 @@ package views
 
 import (
 	"fmt"
-	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/tools"
 )
 
@@ -69,10 +68,6 @@ func Modes(m model) string {
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-	case 6:
-		// concurrent dl
-		tools.ClearCli()
-		go concurrent.Start()
 	}
 
 	return msg

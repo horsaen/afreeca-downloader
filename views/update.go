@@ -3,10 +3,12 @@ package views
 import (
 	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
+	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/tiktok"
+	"horsaen/afreeca-downloader/tools"
 	"os"
 	"strings"
 
@@ -47,7 +49,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 		case tea.KeyEnter:
-			if !m.Running && m.TextInput.Value() != "" && m.Mode != 2 {
+			if !m.Running && (m.TextInput.Value() != "" || m.Platform == 6) && m.Mode != 2 {
 				m.Running = true
 				switch m.Platform {
 				case 0:
@@ -67,7 +69,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							m.Running = false
 							os.Exit(0)
 						}()
-
 					}
 				case 1:
 					go bigo.Start(m.TextInput.Value())
@@ -79,6 +80,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					go panda.Start(m.TextInput.Value())
 				case 5:
 					go tiktok.Start(m.TextInput.Value())
+				case 6:
+					tools.ClearCli()
+					go concurrent.Start()
 				}
 			}
 		}
