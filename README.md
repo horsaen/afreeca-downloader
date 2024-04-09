@@ -19,6 +19,8 @@ Remember, some sites may require cookies to be able to download streams, read mo
 
 ## Installation and Usage
 
+Have no clue what you're looking at? Don't worry! There's a simple guide [here](docs/getting-started.md) to get you started.
+
 Pre-built binaries are available in the [releases](https://github.com/horsaen/afreeca-downloader/releases) tab.
 
 To build from source:
