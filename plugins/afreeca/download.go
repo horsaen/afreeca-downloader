@@ -215,7 +215,7 @@ func DownloadPlaylists(playlists []string) {
 			}
 		}
 
-		filename := "downloads/Afreeca/" + now + "/" + strconv.Itoa(i+1) + ".ts"
+		filename := "downloads/Afreeca/Playlists/" + now + "/" + strconv.Itoa(i+1) + ".ts"
 		out, _ := os.Create(filename)
 
 		for _, segment := range segments {
