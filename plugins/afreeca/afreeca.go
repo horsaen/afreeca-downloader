@@ -44,6 +44,7 @@ func Start(bjId string) {
 }
 
 func Playlist(inputPlaylists []string) {
+	tools.Exists("downloads/Afreeca")
 	tools.Exists("downloads/Afreeca/Playlists")
 
 	playlists := ParsePlaylists(inputPlaylists)
@@ -52,6 +53,7 @@ func Playlist(inputPlaylists []string) {
 }
 
 func Vod(TitleNo string) {
+	tools.Exists("downloads/Afreeca")
 	tools.Exists("downloads/Afreeca/Vods")
 
 	sourceFiles := GetVodFiles(TitleNo)

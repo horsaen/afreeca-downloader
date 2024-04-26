@@ -50,7 +50,6 @@ func main() {
 
 	switch *mode {
 	case "afreeca":
-		tools.Exists("downloads/Afreeca")
 		if *playlist {
 			inputPlaylists := afreeca.GetPlaylists()
 			afreeca.Playlist(inputPlaylists)
