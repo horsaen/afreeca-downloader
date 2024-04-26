@@ -4,6 +4,8 @@ A simple tool to download streams from afreeca and other sites
 
 ![tui screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/tui.png)
 
+Feature request or there's an issue the wiki doesn't cover? Join the Discord [here](https://discord.gg/yzNM7CPn4s)
+
 ## Supported Sites
 
 The -mode flag supports the following sites
