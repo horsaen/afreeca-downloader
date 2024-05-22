@@ -12,6 +12,7 @@ The -mode flag supports the following sites
 
 - afreeca
 - bigo
+- chzzk !!! REQUIRES YT-DLP !!!
 - flex
 - kick
 - panda
