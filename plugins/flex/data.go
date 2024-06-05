@@ -12,8 +12,9 @@ import (
 )
 
 type User struct {
-	Id    int `json:"id"`
-	Owner struct {
+	Id      int    `json:"id"`
+	Message string `json:"message"`
+	Owner   struct {
 		LoginId  string `json:"loginId"`
 		Nickname string `json:"nickname"`
 	} `json:"owner"`

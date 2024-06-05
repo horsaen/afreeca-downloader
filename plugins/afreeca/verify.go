@@ -82,7 +82,8 @@ func CheckOnline(bjId string) bool {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("A network error occurred :" + err.Error() + "\nretrying...")
+		Start(bjId)
 	}
 
 	bodyText, _ := io.ReadAll(resp.Body)

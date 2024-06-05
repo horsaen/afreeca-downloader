@@ -42,10 +42,10 @@ func ConcurrentDownload(user *[]string, nickname string, broad_no string, playli
 		resp, err := client.Do(req)
 
 		if err != nil {
-			(*user)[2] = "error"
-			(*user)[3] = "error"
+			(*user)[2] = "ERROR"
+			(*user)[3] = "RETRYING"
 			(*user)[4] = err.Error()
-			return
+			ConcurrentDownload(user, nickname, broad_no, playlist)
 		}
 
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -72,10 +72,10 @@ func ConcurrentDownload(user *[]string, nickname string, broad_no string, playli
 					resp, err := http.Get(playlistUrl)
 
 					if err != nil {
-						(*user)[2] = "error"
-						(*user)[3] = "error"
+						(*user)[2] = "ERROR"
+						(*user)[3] = "RETRYING"
 						(*user)[4] = err.Error()
-						return
+						ConcurrentDownload(user, nickname, broad_no, playlist)
 					}
 
 					bytes += resp.ContentLength

@@ -35,6 +35,7 @@ func Start(bjId string) {
 	}
 
 	if DvrCheck(bjId) {
+		fmt.Printf("User %s online.\n", bjId)
 		nickname, broad_no := UserData(bjId)
 
 		url := GetStream(bjId, broad_no, "")

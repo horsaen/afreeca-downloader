@@ -32,10 +32,10 @@ func ConcurrentDownload(user *[]string, playlist string) {
 		resp, err := client.Do(req)
 
 		if err != nil {
-			(*user)[2] = "error"
-			(*user)[3] = "error"
+			(*user)[2] = "ERROR"
+			(*user)[3] = "RETRYING"
 			(*user)[4] = err.Error()
-			return
+			ConcurrentDownload(user, playlist)
 		}
 
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -60,10 +60,10 @@ func ConcurrentDownload(user *[]string, playlist string) {
 					resp, err := http.Get(line)
 
 					if err != nil {
-						(*user)[2] = "error"
-						(*user)[3] = "error"
+						(*user)[2] = "ERROR"
+						(*user)[3] = "RETRYING"
 						(*user)[4] = err.Error()
-						return
+						ConcurrentDownload(user, playlist)
 					}
 
 					// since kick doesn't actually return a content-length header for go just use this instead of having to read the segments in ram
@@ -78,10 +78,10 @@ func ConcurrentDownload(user *[]string, playlist string) {
 					_, err = io.Copy(out, resp.Body)
 
 					if err != nil {
-						(*user)[2] = "error"
-						(*user)[3] = "error"
+						(*user)[2] = "ERROR"
+						(*user)[3] = "RETRYING"
 						(*user)[4] = err.Error()
-						return
+						ConcurrentDownload(user, playlist)
 					}
 
 					playlistUrls[line] = true

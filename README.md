@@ -16,6 +16,7 @@ The -mode flag supports the following sites
 - flex
 - kick
 - panda
+- soop !!! REQUIRES YT-DLP !!!
 - tiktok
 
 Remember, some sites may require cookies to be able to download streams, read more below
@@ -42,7 +43,10 @@ go install
 
 ![concurrent screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/concurrent.png)
 
-For now supports all sites other than TikTok
+Supports all sites except:
+- Chzzk
+- Soop
+- TikTok
 
 To add users, open the users file @ `.afreeca-downloader/users`, and input users following the format
 
@@ -68,6 +72,8 @@ The cookies can be found in Developer tools > Storage > Cookies
 
 ### Afreeca
 
+rip afreeca, will update as needed, but will keep until it dies
+
 - Copy only the VALUE of PdboxTicket into .afreeca-downloader/cookies/afreeca
 - Should end up looking something like ``.A32.7bbT5``
 
@@ -92,3 +98,7 @@ Please note: i don't actually know if you need them or not, so just add them if 
 ### FlexTV
 - Copy only the VALUE of flx_oauth_access into .afreeca-downloader/cookies/flex
 - Should just look like a random string
+
+### Soop
+
+- Copy only the VALUE of client-id into .afreeca-downloader/cookies/soop

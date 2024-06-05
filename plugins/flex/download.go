@@ -36,10 +36,10 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 		resp, err := client.Do(req)
 
 		if err != nil {
-			(*user)[2] = "error"
-			(*user)[3] = "error"
+			(*user)[2] = "ERROR"
+			(*user)[3] = "RETRYING"
 			(*user)[4] = err.Error()
-			return
+			ConcurrentDownload(user, playlist, nickname, userId)
 		}
 
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -64,10 +64,10 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 					resp, err := http.Get(line)
 
 					if err != nil {
-						(*user)[2] = "error"
-						(*user)[3] = "error"
+						(*user)[2] = "ERROR"
+						(*user)[3] = "RETRYING"
 						(*user)[4] = err.Error()
-						return
+						ConcurrentDownload(user, playlist, nickname, userId)
 					}
 
 					// since flex doesn't actually return a content-length header for go just use this instead of having to read the segments in ram

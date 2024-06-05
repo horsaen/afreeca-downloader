@@ -34,7 +34,7 @@ func Start(userId string) {
 	}
 
 	if DvrCheck(userId) {
-		fmt.Println("User online.")
+		fmt.Printf("User %s online.\n", userId)
 
 		masterPlaylist := GetMaster(userId)
 

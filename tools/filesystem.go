@@ -29,5 +29,6 @@ func InitConfDir() {
 		os.Create(cookies + "flex")
 		os.Create(cookies + "kick")
 		os.Create(cookies + "panda")
+		os.Create(cookies + "soop")
 	}
 }

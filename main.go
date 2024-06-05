@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
+	"horsaen/afreeca-downloader/plugins/chzzk"
 	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
+	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/plugins/tiktok"
 	"horsaen/afreeca-downloader/tools"
 	"horsaen/afreeca-downloader/views"
@@ -63,12 +65,16 @@ func main() {
 		}
 	case "bigo":
 		bigo.Start(username)
+	case "chzzk":
+		chzzk.Start(username)
 	case "flex":
 		flex.Start(username)
 	case "kick":
 		kick.Start(username)
 	case "panda":
 		panda.Start(username)
+	case "soop":
+		soop.Start(username)
 	case "tiktok":
 		tiktok.Start(username)
 	case "tui":
