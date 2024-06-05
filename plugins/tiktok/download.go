@@ -94,3 +94,46 @@ func Download(playlist string, userId string) bool {
 		time.Sleep(3 * time.Second)
 	}
 }
+
+func DownloadFlv(url string, userId string) {
+	tools.Exists("downloads/Tiktok/" + userId)
+
+	client := &http.Client{}
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	var start_time = time.Now()
+	filename := userId + "-" + time.Now().Format("200601021504") + "-tiktok.flv"
+
+	out, _ := os.Create("downloads/Tiktok/" + userId + "/" + filename)
+
+	go func() {
+		for {
+			elapsed_time := time.Since(start_time)
+			filePath := "downloads/Tiktok/" + userId + "/" + filename
+			if _, err := os.Stat(filePath); os.IsNotExist(err) {
+				continue
+			}
+			filesize, _ := os.Stat(filePath)
+
+			fmt.Printf("\rDownloading to %s || %s @ %s      \x1b[?25l", filename, tools.FormatTime(elapsed_time), tools.FormatBytes(filesize.Size()))
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = io.Copy(out, resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("FLV download complete.")
+
+	Start(userId)
+}

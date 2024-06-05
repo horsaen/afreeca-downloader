@@ -9,6 +9,27 @@ import (
 	"time"
 )
 
+func CheckExists(roomId string) bool {
+	// res, err := http.Get("https://www.tiktok.com/api/live/detail/?aid=1988&roomID=" + streamId)
+	res, err := http.Get("https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id=" + roomId)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bodyText, _ := io.ReadAll(res.Body)
+
+	var live LiveV2
+
+	json.Unmarshal(bodyText, &live)
+
+	if live.Status == 10011 {
+		return false
+	} else {
+		return true
+	}
+}
+
 func DvrCheck(streamId string) bool {
 	for {
 		if CheckOnline(streamId) {
@@ -20,7 +41,8 @@ func DvrCheck(streamId string) bool {
 }
 
 func CheckOnline(streamId string) bool {
-	res, err := http.Get("https://www.tiktok.com/api/live/detail/?aid=1988&roomID=" + streamId)
+	// res, err := http.Get("https://www.tiktok.com/api/live/detail/?aid=1988&roomID=" + streamId)
+	res, err := http.Get("https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id=" + streamId)
 
 	if err != nil {
 		log.Fatal(err)
@@ -28,9 +50,13 @@ func CheckOnline(streamId string) bool {
 
 	bodyText, _ := io.ReadAll(res.Body)
 
-	var live Live
+	var live LiveV2
 
 	json.Unmarshal(bodyText, &live)
 
-	return live.LiveRoomInfo.LiveUrl != ""
+	if live.Status == 0 {
+		return true
+	} else {
+		return false
+	}
 }

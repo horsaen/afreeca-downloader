@@ -17,6 +17,21 @@ type Live struct {
 	} `json:"LiveRoomInfo"`
 }
 
+type LiveV2 struct {
+	Data struct {
+		Owner struct {
+			Nickname string `json:"nickname"`
+		} `json:"owner"`
+		StreamUrl struct {
+			FlvPullUrl struct {
+				FullHD string `json:"FULL_HD1"`
+			} `json:"flv_pull_url"`
+			HlsPullUrl string `json:"hls_pull_url"`
+		} `json:"stream_url"`
+	} `json:"data"`
+	Status int `json:"status_code"`
+}
+
 func RoomId(userId string) string {
 	client := &http.Client{}
 
@@ -46,8 +61,9 @@ func RoomId(userId string) string {
 	}
 }
 
-func GetPlaylist(streamId string) string {
-	res, err := http.Get("https://www.tiktok.com/api/live/detail/?aid=1988&roomID=" + streamId)
+func GetPlaylist(streamId string) (string, string) {
+	// res, err := http.Get("https://www.tiktok.com/api/live/detail/?aid=1988&roomID=" + streamId)
+	res, err := http.Get("https://webcast.tiktok.com/webcast/room/info/?aid=1988&room_id=" + streamId)
 
 	if err != nil {
 		log.Fatal(err)
@@ -55,9 +71,13 @@ func GetPlaylist(streamId string) string {
 
 	bodyText, _ := io.ReadAll(res.Body)
 
-	var live Live
+	var live LiveV2
 
 	json.Unmarshal(bodyText, &live)
 
-	return live.LiveRoomInfo.LiveUrl
+	if live.Data.StreamUrl.HlsPullUrl == "" {
+		return "flv", live.Data.StreamUrl.FlvPullUrl.FullHD
+	} else {
+		return "hls", live.Data.StreamUrl.HlsPullUrl
+	}
 }

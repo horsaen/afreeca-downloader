@@ -3,6 +3,7 @@ package tiktok
 import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
+	"os"
 )
 
 func Start(userId string) {
@@ -10,11 +11,21 @@ func Start(userId string) {
 
 	roomId := RoomId(userId)
 
+	if !CheckExists(roomId) {
+		fmt.Printf("User %s not found.\n", userId)
+		os.Exit(1)
+	}
+
 	if DvrCheck(roomId) {
-		fmt.Println("User online.")
+		fmt.Printf("User %s online.\n", userId)
 
-		url := GetPlaylist(roomId)
+		mode, url := GetPlaylist(roomId)
 
-		Download(url, userId)
+		if mode == "hls" {
+			Download(url, userId)
+		} else {
+			fmt.Println("No HLS Stream found, switching to FLV.")
+			DownloadFlv(url, userId)
+		}
 	}
 }
