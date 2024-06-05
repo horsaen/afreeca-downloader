@@ -13,14 +13,16 @@ func Platforms(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	Platforms := fmt.Sprintf(
-		"%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		"%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 		tools.Checkbox("Afreeca", c == 0),
 		tools.Checkbox("Bigo", c == 1),
-		tools.Checkbox("Flex", c == 2),
-		tools.Checkbox("Kick", c == 3),
-		tools.Checkbox("Panda", c == 4),
-		tools.Checkbox("TikTok", c == 5),
-		tools.Checkbox("Concurrent", c == 6),
+		tools.Checkbox("Chzzk", c == 2),
+		tools.Checkbox("Flex", c == 3),
+		tools.Checkbox("Kick", c == 4),
+		tools.Checkbox("Panda", c == 5),
+		tools.Checkbox("TikTok", c == 6),
+		tools.Checkbox("Soop", c == 7),
+		tools.Checkbox("Concurrent", c == 8),
 	)
 
 	return fmt.Sprintf(tpl, Platforms)
@@ -40,6 +42,13 @@ func Modes(m model) string {
 			"(esc to quit)",
 		) + "\n"
 	case 2:
+		// chzzk
+		msg = fmt.Sprintf(
+			"Username\n\n%s\n\n%s",
+			m.TextInput.View(),
+			"(esc to quit)",
+		) + "\n"
+	case 3:
 		// flex
 		msg = fmt.Sprintf(
 			"User ID:\n%s\n\n%s\n\n%s",
@@ -47,27 +56,35 @@ func Modes(m model) string {
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-	case 3:
+	case 4:
 		// kick
 		msg = fmt.Sprintf(
 			"Username:\n\n%s\n\n%s",
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-	case 4:
+	case 5:
 		// panda
 		msg = fmt.Sprintf(
 			"Username:\n\n%s\n\n%s",
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-	case 5:
+	case 6:
 		// tiktok
 		msg = fmt.Sprintf(
 			"Username:\n\n%s\n\n%s",
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
+	case 7:
+		// soop
+		msg = fmt.Sprintf(
+			"Username:\n\n%s\n\n%s",
+			m.TextInput.View(),
+			"(esc to quit)",
+		) + "\n"
+
 	}
 
 	return msg

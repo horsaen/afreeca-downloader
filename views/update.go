@@ -3,10 +3,12 @@ package views
 import (
 	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
+	"horsaen/afreeca-downloader/plugins/chzzk"
 	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
+	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/plugins/tiktok"
 	"horsaen/afreeca-downloader/tools"
 	"os"
@@ -73,14 +75,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 1:
 					go bigo.Start(m.TextInput.Value())
 				case 2:
-					go flex.Start(m.TextInput.Value())
+					go chzzk.Start(m.TextInput.Value())
 				case 3:
-					go kick.Start(m.TextInput.Value())
+					go flex.Start(m.TextInput.Value())
 				case 4:
-					go panda.Start(m.TextInput.Value())
+					go kick.Start(m.TextInput.Value())
 				case 5:
-					go tiktok.Start(m.TextInput.Value())
+					go panda.Start(m.TextInput.Value())
 				case 6:
+					go tiktok.Start(m.TextInput.Value())
+				case 7:
+					go soop.Start(m.TextInput.Value())
+				case 8:
 					tools.ClearCli()
 					go concurrent.Start()
 				}
@@ -108,8 +114,8 @@ func UpdatePlatforms(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "j", "down":
 			m.Platform++
-			if m.Platform > 6 {
-				m.Platform = 6
+			if m.Platform > 8 {
+				m.Platform = 8
 			}
 		case "k", "up":
 			m.Platform--
