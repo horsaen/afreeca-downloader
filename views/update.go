@@ -51,18 +51,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 		case tea.KeyEnter:
-			if !m.Running && (m.TextInput.Value() != "" || m.Platform == 6) && m.Mode != 2 {
+			if !m.Running && (strings.TrimSpace(strings.TrimSpace(m.TextInput.Value())) != "" || m.Platform == 8) && m.Mode != 2 {
 				m.Running = true
 				switch m.Platform {
 				case 0:
 					switch m.Mode {
 					case 0:
-						go afreeca.Start(m.TextInput.Value())
+						go afreeca.Start(strings.TrimSpace(m.TextInput.Value()))
 					case 1:
 						done := make(chan bool)
 
 						go func() {
-							afreeca.Vod(m.TextInput.Value())
+							afreeca.Vod(strings.TrimSpace(m.TextInput.Value()))
 							done <- true
 						}()
 
@@ -73,19 +73,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						}()
 					}
 				case 1:
-					go bigo.Start(m.TextInput.Value())
+					go bigo.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 2:
-					go chzzk.Start(m.TextInput.Value())
+					go chzzk.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 3:
-					go flex.Start(m.TextInput.Value())
+					go flex.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 4:
-					go kick.Start(m.TextInput.Value())
+					go kick.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 5:
-					go panda.Start(m.TextInput.Value())
+					go panda.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 6:
-					go tiktok.Start(m.TextInput.Value())
+					go tiktok.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 7:
-					go soop.Start(m.TextInput.Value())
+					go soop.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 8:
 					tools.ClearCli()
 					go concurrent.Start()
