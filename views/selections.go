@@ -44,7 +44,8 @@ func Modes(m model) string {
 	case 2:
 		// chzzk
 		msg = fmt.Sprintf(
-			"Username\n\n%s\n\n%s",
+			"Username\n\n%s\n\n%s\n\n%s",
+			"https://chzzk.naver.com/live/"+keyword("xxxxxx"),
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
@@ -59,14 +60,16 @@ func Modes(m model) string {
 	case 4:
 		// kick
 		msg = fmt.Sprintf(
-			"Username:\n\n%s\n\n%s",
+			"Username:\n\n%s\n\n%s\n\n%s",
+			"https://kick.com/"+keyword("xxxxxx"),
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
 	case 5:
 		// panda
 		msg = fmt.Sprintf(
-			"Username:\n\n%s\n\n%s",
+			"Username:\n\n%s\n\n%s\n\n%s",
+			"https://www.pandalive.co.kr/live/play/"+keyword("xxxxxx"),
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
@@ -80,7 +83,8 @@ func Modes(m model) string {
 	case 7:
 		// soop
 		msg = fmt.Sprintf(
-			"Username:\n\n%s\n\n%s",
+			"Username:\n\n%s\n\n%s\n\n%s",
+			"https://sooplive.com/"+keyword("xxxxxx"),
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"

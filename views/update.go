@@ -51,7 +51,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 		case tea.KeyEnter:
-			if !m.Running && (strings.TrimSpace(strings.TrimSpace(m.TextInput.Value())) != "" || m.Platform == 8) && m.Mode != 2 {
+			if !m.Running && (strings.TrimSpace(m.TextInput.Value()) != "" || m.Platform == 8) && m.Mode != 2 {
 				m.Running = true
 				switch m.Platform {
 				case 0:
