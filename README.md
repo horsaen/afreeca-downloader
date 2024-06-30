@@ -61,30 +61,32 @@ user3, flex
 Then simply run the program using -concurrent
 
 ## Set Cookies
-
 In order to function correctly, sometimes sites will require that you use cookies in order to validate network requests.
+
+### Automatic
+Feel free to use afreeca-downloader's sister project, [afdl-cookie-loader](https://github.com/horsaen/afdl-cookie-loader). just input your login info, and it'll handle the rest :D
+
+### Manual
 
 Found in your home folder @ `.afreeca-downloader/cookies`, you can input your corresponding cookies.
 
 The cookies can be found in Developer tools > Storage > Cookies
 
-!!WILL SOON SUPPORT AUTOCOOKIES!!
-
-### Afreeca
+#### Afreeca
 
 rip afreeca, will update as needed, but will keep until it dies
 
 - Copy only the VALUE of PdboxTicket into .afreeca-downloader/cookies/afreeca
 - Should end up looking something like ``.A32.7bbT5``
 
-### Panda
+#### Panda
 
 - Copy only the VALUE of sessKey into .afreeca-downloader/cookies/panda
 - Should just look like a random string
 
 Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there doesn't seem to be a fix for this (more testing needed)
 
-### kick
+#### kick
 This one requires a bit more cookies, please add the VALUES to .afreeca-downloader/cookies/kick in the following order:
 
 1. __cf_bm
@@ -95,7 +97,7 @@ Mess up the order and it won't work
 
 Please note: i don't actually know if you need them or not, so just add them if you encounter any issues
 
-### FlexTV
+#### FlexTV
 - Copy only the VALUE of flx_oauth_access into .afreeca-downloader/cookies/flex
 - Should just look like a random string
 
