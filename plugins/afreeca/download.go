@@ -19,7 +19,10 @@ func ConcurrentDownload(user *[]string, nickname string, broad_no string, playli
 	bjId := (*user)[0]
 	tools.Exists("downloads/Afreeca/" + bjId)
 
-	client := &http.Client{}
+	client := &http.Client{
+		// attempt to fix dropped segments
+		Timeout: 15 * time.Second,
+	}
 
 	req, _ := http.NewRequest("GET", playlist, nil)
 
