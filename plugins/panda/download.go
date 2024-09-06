@@ -17,7 +17,24 @@ func ConcurrentDownload(user *[]string, playlist string) {
 
 	client := &http.Client{}
 
+	cookies := tools.LoadCookies("panda")
+
 	req, _ := http.NewRequest("GET", playlist, nil)
+
+	req.Header.Add("Cookie", "sessKey="+cookies[0])
+	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0")
+	req.Header.Add("Accept", "application/json, text/plain, */*")
+	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Origin", "https://www.pandalive.co.kr")
+	req.Header.Add("DNT", "1")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Referer", "https://www.pandalive.co.kr/")
+	req.Header.Add("Sec-Fetch-Dest", "empty")
+	req.Header.Add("Sec-Fetch-Mode", "cors")
+	req.Header.Add("Sec-Fetch-Site", "same-site")
+	req.Header.Add("Sec-GPC", "1")
+	req.Header.Add("TE", "trailers")
 
 	filename := userId + "-" + time.Now().Format("200601021504") + "-panda.ts"
 
@@ -56,7 +73,22 @@ func ConcurrentDownload(user *[]string, playlist string) {
 			if strings.HasPrefix(line, "https://") {
 				if !playlistUrls[line] {
 
-					resp, err := http.Get(line)
+					req, _ := http.NewRequest("GET", line, nil)
+
+					req.Header.Add("Cookie", "sessKey="+cookies[0])
+					req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0")
+					req.Header.Add("Accept", "application/json, text/plain, */*")
+					req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+					req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+					req.Header.Add("Origin", "https://www.pandalive.co.kr")
+					req.Header.Add("DNT", "1")
+					req.Header.Add("Connection", "keep-alive")
+					req.Header.Add("Referer", "https://www.pandalive.co.kr/")
+					req.Header.Add("Sec-Fetch-Dest", "empty")
+					req.Header.Add("Sec-Fetch-Mode", "cors")
+					req.Header.Add("Sec-Fetch-Site", "same-site")
+					req.Header.Add("Sec-GPC", "1")
+					req.Header.Add("TE", "trailers")
 
 					if err != nil {
 						(*user)[2] = "ERROR"
@@ -92,12 +124,29 @@ func ConcurrentDownload(user *[]string, playlist string) {
 	}
 }
 
-func Download(userId string, playlist string) bool {
+func Download(userId string, playlist string) {
 	tools.Exists("downloads/Panda/" + userId)
 
 	client := &http.Client{}
 
+	cookies := tools.LoadCookies("panda")
+
 	req, _ := http.NewRequest("GET", playlist, nil)
+
+	req.Header.Add("Cookie", "sessKey="+cookies[0])
+	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0")
+	req.Header.Add("Accept", "application/json, text/plain, */*")
+	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Origin", "https://www.pandalive.co.kr")
+	req.Header.Add("DNT", "1")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Referer", "https://www.pandalive.co.kr/")
+	req.Header.Add("Sec-Fetch-Dest", "empty")
+	req.Header.Add("Sec-Fetch-Mode", "cors")
+	req.Header.Add("Sec-Fetch-Site", "same-site")
+	req.Header.Add("Sec-GPC", "1")
+	req.Header.Add("TE", "trailers")
 
 	filename := userId + "-" + time.Now().Format("200601021504") + "-panda.ts"
 
@@ -129,8 +178,24 @@ func Download(userId string, playlist string) bool {
 			line := scanner.Text()
 			if strings.HasPrefix(line, "https://") {
 				if !playlistUrls[line] {
+					req, _ := http.NewRequest("GET", line, nil)
 
-					resp, err := http.Get(line)
+					req.Header.Add("Cookie", "sessKey="+cookies[0])
+					req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0")
+					req.Header.Add("Accept", "application/json, text/plain, */*")
+					req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+					req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+					req.Header.Add("Origin", "https://www.pandalive.co.kr")
+					req.Header.Add("DNT", "1")
+					req.Header.Add("Connection", "keep-alive")
+					req.Header.Add("Referer", "https://www.pandalive.co.kr/")
+					req.Header.Add("Sec-Fetch-Dest", "empty")
+					req.Header.Add("Sec-Fetch-Mode", "cors")
+					req.Header.Add("Sec-Fetch-Site", "same-site")
+					req.Header.Add("Sec-GPC", "1")
+					req.Header.Add("TE", "trailers")
+
+					resp, err := client.Do(req)
 
 					if err != nil {
 						fmt.Println(err)

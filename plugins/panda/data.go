@@ -71,7 +71,24 @@ func GetMaster(userId string) string {
 func ParseMaster(masterPlaylist string) string {
 	client := &http.Client{}
 
+	cookies := tools.LoadCookies("panda")
+
 	req, _ := http.NewRequest("GET", masterPlaylist, nil)
+
+	req.Header.Add("Cookie", "sessKey="+cookies[0])
+	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:124.0) Gecko/20100101 Firefox/124.0")
+	req.Header.Add("Accept", "application/json, text/plain, */*")
+	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Origin", "https://www.pandalive.co.kr")
+	req.Header.Add("DNT", "1")
+	req.Header.Add("Connection", "keep-alive")
+	req.Header.Add("Referer", "https://www.pandalive.co.kr/")
+	req.Header.Add("Sec-Fetch-Dest", "empty")
+	req.Header.Add("Sec-Fetch-Mode", "cors")
+	req.Header.Add("Sec-Fetch-Site", "same-site")
+	req.Header.Add("Sec-GPC", "1")
+	req.Header.Add("TE", "trailers")
 
 	resp, err := client.Do(req)
 
