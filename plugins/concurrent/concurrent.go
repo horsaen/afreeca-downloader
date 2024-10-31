@@ -2,11 +2,11 @@ package concurrent
 
 import (
 	"bufio"
-	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
+	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/tools"
 	"os"
 	"strings"
@@ -41,8 +41,10 @@ func Start() {
 
 	for i := range users {
 		switch users[i][1] {
-		case "afreeca":
-			go afreeca.Concurrent(&users[i])
+		// case "afreeca":
+		// go afreeca.Concurrent(&users[i])
+		case "soop":
+			go soop.Concurrent(&users[i])
 		case "bigo":
 			go bigo.Concurrent(&users[i])
 		case "kick":

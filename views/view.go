@@ -67,9 +67,10 @@ func (m model) View() string {
 			s = Platforms(m)
 		} else if !m.ModeSelected {
 			s = Modes(m)
-		} else if m.ModeSelected {
-			s = Afreeca(m)
 		}
+		// else if m.ModeSelected {
+		// 	s = Afreeca(m)
+		// }
 	}
 
 	return s

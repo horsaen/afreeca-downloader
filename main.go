@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"horsaen/afreeca-downloader/plugins/afreeca"
 	"horsaen/afreeca-downloader/plugins/bigo"
 	"horsaen/afreeca-downloader/plugins/chzzk"
 	"horsaen/afreeca-downloader/plugins/concurrent"
@@ -51,18 +50,20 @@ func main() {
 	}
 
 	switch *mode {
-	case "afreeca":
-		if *playlist {
-			inputPlaylists := afreeca.GetPlaylists()
-			afreeca.Playlist(inputPlaylists)
-		} else if *vod {
-			var TitleNo string
-			fmt.Println("Enter title number:")
-			fmt.Scan(&TitleNo)
-			afreeca.Vod(TitleNo)
-		} else {
-			afreeca.Start(username)
-		}
+	// case "afreeca":
+	// 	if *playlist {
+	// 		inputPlaylists := afreeca.GetPlaylists()
+	// 		afreeca.Playlist(inputPlaylists)
+	// 	} else if *vod {
+	// 		var TitleNo string
+	// 		fmt.Println("Enter title number:")
+	// 		fmt.Scan(&TitleNo)
+	// 		afreeca.Vod(TitleNo)
+	// 	} else {
+	// 		afreeca.Start(username)
+	// 	}
+	case "soop":
+		soop.Start(username)
 	case "bigo":
 		bigo.Start(username)
 	case "chzzk":
@@ -73,8 +74,6 @@ func main() {
 		kick.Start(username)
 	case "panda":
 		panda.Start(username)
-	case "soop":
-		soop.Start(username)
 	case "tiktok":
 		tiktok.Start(username)
 	case "tui":

@@ -13,16 +13,15 @@ func Platforms(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	Platforms := fmt.Sprintf(
-		"%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-		tools.Checkbox("Afreeca", c == 0),
+		"%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		tools.Checkbox("Soop", c == 0),
 		tools.Checkbox("Bigo", c == 1),
 		tools.Checkbox("Chzzk", c == 2),
 		tools.Checkbox("Flex", c == 3),
 		tools.Checkbox("Kick", c == 4),
 		tools.Checkbox("Panda", c == 5),
 		tools.Checkbox("TikTok", c == 6),
-		tools.Checkbox("Soop", c == 7),
-		tools.Checkbox("Concurrent", c == 8),
+		tools.Checkbox("Concurrent", c == 7),
 	)
 
 	return fmt.Sprintf(tpl, Platforms)
@@ -32,8 +31,16 @@ func Modes(m model) string {
 	var msg string
 
 	switch m.Platform {
+	// keeping because i don't want to write it again later !!!
+	// case 0:
+	// 	msg = AfreecaModes(m)
 	case 0:
-		msg = AfreecaModes(m)
+		// soop
+		msg = fmt.Sprintf(
+			"Username\n\n%s\n\n%s",
+			m.TextInput.View(),
+			"(esc to quit)",
+		) + "\n"
 	case 1:
 		// bigo
 		msg = fmt.Sprintf(
@@ -80,14 +87,6 @@ func Modes(m model) string {
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-	case 7:
-		// soop
-		msg = fmt.Sprintf(
-			"Username:\n\n%s\n\n%s\n\n%s",
-			"https://sooplive.com/"+keyword("xxxxxx"),
-			m.TextInput.View(),
-			"(esc to quit)",
-		) + "\n"
 
 	}
 
@@ -111,29 +110,30 @@ func AfreecaModes(m model) string {
 	return fmt.Sprintf(tpl, Modes)
 }
 
-func Afreeca(m model) string {
-	var msg string
+// keep as ref for soop implementation
+// func Afreeca(m model) string {
+// 	var msg string
 
-	switch m.Mode {
-	case 0:
-		msg = fmt.Sprintf(
-			"Username:\n\n%s\n\n%s",
-			m.TextInput.View(),
-			"(esc to quit)",
-		) + "\n"
-	case 1:
-		msg = fmt.Sprintf(
-			"VOD ID:\n\n%s\n\n%s",
-			m.TextInput.View(),
-			"(esc to quit)",
-		) + "\n"
-	case 2:
-		msg = fmt.Sprintf(
-			"One m3u8 per line.\n\n%s\n\n%s",
-			m.TextArea.View(),
-			"(ctrl+c/esc to start download)",
-		) + "\n\n"
-	}
+// 	switch m.Mode {
+// 	case 0:
+// 		msg = fmt.Sprintf(
+// 			"Username:\n\n%s\n\n%s",
+// 			m.TextInput.View(),
+// 			"(esc to quit)",
+// 		) + "\n"
+// 	case 1:
+// 		msg = fmt.Sprintf(
+// 			"VOD ID:\n\n%s\n\n%s",
+// 			m.TextInput.View(),
+// 			"(esc to quit)",
+// 		) + "\n"
+// 	case 2:
+// 		msg = fmt.Sprintf(
+// 			"One m3u8 per line.\n\n%s\n\n%s",
+// 			m.TextArea.View(),
+// 			"(ctrl+c/esc to start download)",
+// 		) + "\n\n"
+// 	}
 
-	return msg
-}
+// 	return msg
+// }
