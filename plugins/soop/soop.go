@@ -2,6 +2,7 @@ package soop
 
 import (
 	"fmt"
+	"horsaen/afreeca-downloader/tools"
 	"os"
 	"time"
 )
@@ -39,6 +40,7 @@ func Concurrent(user *[]string) {
 }
 
 func Start(bjId string) {
+	tools.Exists("downloads/Soop")
 	exists, pwd, online, broad := GetUserData(bjId)
 
 	if !exists {
