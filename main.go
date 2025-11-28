@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/plugins/bigo"
 	"horsaen/afreeca-downloader/plugins/chzzk"
-	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
-	"horsaen/afreeca-downloader/plugins/kick"
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/plugins/tiktok"
@@ -21,8 +19,6 @@ import (
 
 func main() {
 	tools.InitConfDir()
-	tools.Exists("downloads")
-
 	var username string
 
 	mode := flag.String("mode", "tui", "Mode")
@@ -38,9 +34,9 @@ func main() {
 		tools.Version()
 	}
 
-	if *concurrently {
-		concurrent.Start()
-	}
+	// if *concurrently {
+	// 	concurrent.Start()
+	// }
 
 	if *userArg != "" || *playlist || *vod || *concurrently || *mode == "tui" {
 		username = *userArg
@@ -50,32 +46,35 @@ func main() {
 	}
 
 	switch *mode {
-	// case "afreeca":
-	// 	if *playlist {
-	// 		inputPlaylists := afreeca.GetPlaylists()
-	// 		afreeca.Playlist(inputPlaylists)
-	// 	} else if *vod {
-	// 		var TitleNo string
-	// 		fmt.Println("Enter title number:")
-	// 		fmt.Scan(&TitleNo)
-	// 		afreeca.Vod(TitleNo)
-	// 	} else {
-	// 		afreeca.Start(username)
-	// 	}
 	case "soop":
-		soop.Start(username)
+		if *playlist {
+			var playlist string
+			fmt.Println("Enter playlist url:")
+			fmt.Scan(&playlist)
+			soop.DownloadVod(playlist)
+		} else {
+			soop.Start(username)
+		}
+		// if *vod {
+		// 	var TitleNo string
+		// 	fmt.Println("Enter title number:")
+		// 	fmt.Scan(&TitleNo)
+		// 	afreeca.Vod(TitleNo)
+		// }
 	case "bigo":
 		bigo.Start(username)
 	case "chzzk":
 		chzzk.Start(username)
 	case "flex":
 		flex.Start(username)
-	case "kick":
-		kick.Start(username)
 	case "panda":
 		panda.Start(username)
 	case "tiktok":
 		tiktok.Start(username)
+	case "kick":
+	case "afreeca":
+		fmt.Println("DEPRICATED")
+		os.Exit(1)
 	case "tui":
 		p := tea.NewProgram(views.InitialModel())
 		if _, err := p.Run(); err != nil {

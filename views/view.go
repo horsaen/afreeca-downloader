@@ -68,9 +68,9 @@ func (m model) View() string {
 		} else if !m.ModeSelected {
 			s = Modes(m)
 		}
-		// else if m.ModeSelected {
-		// 	s = Afreeca(m)
-		// }
+		if m.ModeSelected {
+			s = Soop(m)
+		}
 	}
 
 	return s

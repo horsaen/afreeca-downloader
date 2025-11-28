@@ -3,119 +3,149 @@ package soop
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"io"
+	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
 
-type Station struct {
-	Code  int `json:"code"`
-	Broad struct {
-		BroadNo    int  `json:"broad_no"`
-		IsPassword bool `json:"is_password"`
-	} `json:"broad"`
-}
-type UserData struct {
+type Channel struct {
 	Channel struct {
-		BNo    string `json:"BNO"`
-		BJNick string `json:"BJNICK"`
+		TK  string `json:"TK"`
+		AID string `json:"AID"`
 	} `json:"CHANNEL"`
 }
-type Master struct {
-	Channel struct {
-		Aid string `json:"AID"`
-	} `json:"CHANNEL"`
-}
-type Base struct {
+
+type Server struct {
 	ViewUrl string `json:"view_url"`
 }
 
-func GetUserData(user string) (bool, bool, bool, string) {
-	// moved to one function for effiency, also doensn't need cookies
-	url := "https://chapi.sooplive.co.kr/api/" + user + "/station/"
-
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0")
-	req.Header.Add("Accept", "application/json, text/plain, */*")
-	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
-
-	resp, _ := http.DefaultClient.Do(req)
-
-	body, _ := io.ReadAll(resp.Body)
-
-	var station Station
-
-	json.Unmarshal(body, &station)
-
-	exists := station.Code != 9000
-	pwd := station.Broad.IsPassword
-	online := station.Broad.BroadNo != 0
-	broadNo := station.Broad.BroadNo
-
-	return exists, pwd, online, strconv.Itoa(broadNo)
+type User struct {
+	BroadNo int `json:"broadNo"`
 }
 
-func GetMaster(user string) string {
-	url := "https://live.sooplive.co.kr/afreeca/player_live_api.php?bjid=" + user
+func GetBroadNo(bjid string) string {
+	res, _ := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
 
-	payload := strings.NewReader("bid=" + user + "&type=aid&pwd=&player_type=html5&stream_type=common&quality=master&mode=landing&from_api=0&is_revive=false")
+	body, _ := io.ReadAll(res.Body)
 
-	req, _ := http.NewRequest("POST", url, payload)
+	var user User
+	json.Unmarshal(body, &user)
+
+	return strconv.Itoa(user.BroadNo)
+}
+
+func GetStreamTk(bjid, broad_no string) string {
+	url := "https://live.sooplive.co.kr/afreeca/player_live_api.php?bjid=" + bjid
+
+	payload := fmt.Sprintf(
+		"bid=%s&broad_no=%s&type=live&pwd=&player_type=html5&stream_type=common&quality=HD&mode=landing&from_api=0&is_revive=false",
+		bjid, broad_no,
+	)
+
+	req, _ := http.NewRequest("POST", url, strings.NewReader(payload))
 
 	cookies := tools.LoadCookies("soop")
 
-	req.Header.Add("Cookie", "AuthTicket="+cookies[0])
-	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0")
-	req.Header.Add("Accept", "*/*")
-	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Cookie", "AuthTicket="+cookies[0])
 
-	resp, _ := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 
-	bodyText, _ := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	var master Master
+	defer resp.Body.Close()
 
-	json.Unmarshal(bodyText, &master)
+	body, _ := io.ReadAll(resp.Body)
 
-	return master.Channel.Aid
+	var channel Channel
+	json.Unmarshal(body, &channel)
+
+	return channel.Channel.TK
 }
 
-func GetBase(broad_key string) string {
-	url := "https://livestream-manager.sooplive.co.kr/broad_stream_assign.html?return_type=gcp_cdn&use_cors=true&cors_origin_url=play.sooplive.co.kr&broad_key=" + broad_key + "-common-master-hls"
+func GetStreamAid(bjid, broad_no string) string {
+	url := "https://live.sooplive.co.kr/afreeca/player_live_api.php?bjid=" + bjid
 
-	req, _ := http.NewRequest("POST", url, nil)
+	payload := fmt.Sprintf(
+		"bid=%s&broad_no=%s&type=aid&pwd=&player_type=html5&stream_type=common&quality=master&mode=landing&from_api=0&is_revive=false",
+		bjid, broad_no,
+	)
 
-	req.Header.Add("cookie", "AbroadChk=OK")
-	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0")
-	req.Header.Add("Accept", "*/*")
-	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req, _ := http.NewRequest("POST", url, strings.NewReader(payload))
 
-	resp, _ := http.DefaultClient.Do(req)
+	cookies := tools.LoadCookies("soop")
 
-	bodyText, _ := io.ReadAll(resp.Body)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Cookie", "AuthTicket="+cookies[0])
 
-	var base Base
+	resp, err := http.DefaultClient.Do(req)
 
-	json.Unmarshal(bodyText, &base)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	return strings.Replace(base.ViewUrl, "auth_master_playlist.m3u8", "", -1)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+
+	var channel Channel
+	json.Unmarshal(body, &channel)
+
+	return channel.Channel.AID
 }
 
-func GetStream(base string, master string) string {
-	url := base + "auth_master_playlist.m3u8?aid=" + master
+func GetStreamServer(broad_no string) string {
+	url := fmt.Sprintf("https://livestream-manager.sooplive.co.kr/broad_stream_assign.html?return_type=gcp_cdn&use_cors=true&cors_origin_url=play.sooplive.co.kr&broad_key=%s-common-master-hls&player_mode=landing", broad_no)
 
 	req, _ := http.NewRequest("GET", url, nil)
 
-	resp, _ := http.DefaultClient.Do(req)
+	cookies := tools.LoadCookies("soop")
+
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:144.0) Gecko/20100101 Firefox/144.0")
+	req.Header.Set("Accept", "application/json, text/javascript, */*; q=0.01")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Cookie", "AuthTicket="+cookies[0])
+
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+
+	var server Server
+	json.Unmarshal(body, &server)
+
+	return server.ViewUrl
+}
+
+func GetMasterPlist(server, aid string) string {
+	return fmt.Sprintf("%s?aid=%s", server, aid)
+}
+
+func GetStreamQualities(master string, quality int) string {
+	res, _ := http.Get(master)
 
 	playlists := make([]string, 0)
 
-	scanner := bufio.NewScanner(resp.Body)
+	scanner := bufio.NewScanner(res.Body)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -125,5 +155,13 @@ func GetStream(base string, master string) string {
 		}
 	}
 
-	return base + playlists[0]
+	return playlists[quality]
+}
+
+func GetStream(server, playlist string) (string, string) {
+	parsedUrl, _ := url.Parse(server)
+
+	path := parsedUrl.ResolveReference(&url.URL{Path: "./"}).String()
+
+	return path, path + playlist
 }

@@ -5,193 +5,111 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"time"
 )
 
-func ConcurrentDownload(user *[]string, broad_no string, playlist string) {
-	bjId := (*user)[0]
-	tools.Exists("downloads/Soop/" + bjId)
+func Download(bjid, broad_no, base, stream string) {
+	path := fmt.Sprintf("downloads/soop/%s", bjid)
+	file := fmt.Sprintf("%s-%s-%s-soop.ts", bjid, broad_no, time.Now().Format("200601021504"))
+	os.MkdirAll(path, os.ModePerm)
+	out, _ := os.Create(path + "/" + file)
 
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", playlist, nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	parsedUrl, _ := url.Parse(playlist)
-
-	pathSegments := strings.Split(parsedUrl.Path, "/")
-
-	newPath := strings.Join(pathSegments[:len(pathSegments)-1], "/")
-
-	filename := bjId + "-" + broad_no + "-" + time.Now().Format("200601021504") + "-soop.ts"
-
-	out, _ := os.Create("downloads/Soop/" + bjId + "/" + filename)
-
-	playlistUrls := make(map[string]bool)
-
+	var prevSegments []string
 	var bytes int64 = 0
 	var start_time = time.Now()
-
 	for {
-		resp, err := client.Do(req)
+		res, _ := http.Get(stream)
 
-		if err != nil {
-			(*user)[2] = "ERROR"
-			(*user)[3] = "RETRYING"
-			(*user)[4] = err.Error()
-			ConcurrentDownload(user, broad_no, playlist)
-		}
+		scanner := bufio.NewScanner(res.Body)
 
-		bodyBytes, err := io.ReadAll(resp.Body)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		bodyText := string(bodyBytes)
-
-		if !strings.Contains(bodyText, ".TS") {
-			(*user)[2] = "Offline"
-			(*user)[3] = "Offline"
-			(*user)[4] = "Offline"
-			Concurrent(user)
-		}
-
-		scanner := bufio.NewScanner(strings.NewReader(bodyText))
+		currentSegments := []string{}
 
 		for scanner.Scan() {
 			line := scanner.Text()
 			if strings.HasSuffix(line, ".TS") {
+				currentSegments = append(currentSegments, line)
+				if !slices.Contains(prevSegments, line) {
+					res, _ = http.Get(base + line)
 
-				playlistUrl := fmt.Sprintf("%s://%s%s/%s", parsedUrl.Scheme, parsedUrl.Host, newPath, line)
-
-				if !playlistUrls[playlistUrl] {
-
-					resp, err := http.Get(playlistUrl)
-
-					if err != nil {
-						(*user)[2] = "ERROR"
-						(*user)[3] = "RETRYING"
-						(*user)[4] = err.Error()
-						ConcurrentDownload(user, broad_no, playlist)
-					}
-
-					bytes += resp.ContentLength
+					bytes += res.ContentLength
 					elapsed_time := time.Since(start_time)
 
-					fmt.Printf("\rDownloading to %s || %s @ %s      \x1b[?25l", filename, tools.FormatTime(elapsed_time), tools.FormatBytes(bytes))
+					fmt.Printf("\rDownloading to %s || %s @ %s      \x1b[?25l", file, tools.FormatTime(elapsed_time), tools.FormatBytes(bytes))
 
-					_, err = io.Copy(out, resp.Body)
-
-					if err != nil {
-						(*user)[2] = "ERROR"
-						(*user)[3] = "RETRYING"
-						(*user)[4] = err.Error()
-						ConcurrentDownload(user, broad_no, playlist)
-					}
-
-					playlistUrls[playlistUrl] = true
+					io.Copy(out, res.Body)
 				}
 			}
 		}
 
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
+		if len(currentSegments) == 0 {
+			fmt.Println("Stream has ended, resuming polling.")
+			Start(bjid)
 		}
 
-		time.Sleep(3 * time.Second)
+		prevSegments = currentSegments
 	}
 }
 
-func Download(bjId string, broad_no string, playlist string) {
-	tools.Exists("downloads/Soop/" + bjId)
+func DownloadVod(manifest string) {
+	m3uURL := strings.Replace(manifest, ".smil", ".mp4", -1)
+	os.MkdirAll("downloads/soop", os.ModePerm)
+	res, _ := http.Get(m3uURL)
 
-	client := &http.Client{}
+	base, _ := url.Parse(m3uURL)
+	sc := bufio.NewScanner(res.Body)
 
-	req, err := http.NewRequest("GET", playlist, nil)
+	var initURL string
+	var segments []string
 
-	if err != nil {
-		log.Fatal(err)
+	for sc.Scan() {
+		line := strings.TrimSpace(sc.Text())
+
+		if strings.HasPrefix(line, "#EXT-X-MAP:") {
+			uri := extractQuotedValue(line)
+			full, _ := base.Parse(uri)
+			initURL = full.String()
+			continue
+		}
+
+		if strings.HasPrefix(line, "#") || line == "" {
+			continue
+		}
+
+		full, _ := base.Parse(line)
+		segments = append(segments, full.String())
 	}
 
-	parsedUrl, _ := url.Parse(playlist)
-
-	pathSegments := strings.Split(parsedUrl.Path, "/")
-
-	newPath := strings.Join(pathSegments[:len(pathSegments)-1], "/")
-
-	filename := bjId + "-" + broad_no + "-" + time.Now().Format("200601021504") + "-soop.ts"
-
-	out, _ := os.Create("downloads/Soop/" + bjId + "/" + filename)
-
-	playlistUrls := make(map[string]bool)
-
-	var bytes int64 = 0
-	var start_time = time.Now()
-
-	for {
-		resp, err := client.Do(req)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		bodyBytes, err := io.ReadAll(resp.Body)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		bodyText := string(bodyBytes)
-
-		if !strings.Contains(bodyText, ".TS") {
-			Start(bjId)
-		}
-
-		scanner := bufio.NewScanner(strings.NewReader(bodyText))
-
-		for scanner.Scan() {
-			line := scanner.Text()
-			if strings.HasSuffix(line, ".TS") {
-
-				playlistUrl := fmt.Sprintf("%s://%s%s/%s", parsedUrl.Scheme, parsedUrl.Host, newPath, line)
-
-				if !playlistUrls[playlistUrl] {
-
-					resp, err := http.Get(playlistUrl)
-
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					bytes += resp.ContentLength
-					elapsed_time := time.Since(start_time)
-
-					fmt.Printf("\rDownloading to %s || %s @ %s      \x1b[?25l", filename, tools.FormatTime(elapsed_time), tools.FormatBytes(bytes))
-
-					_, err = io.Copy(out, resp.Body)
-
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					playlistUrls[playlistUrl] = true
-				}
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-		}
-
-		time.Sleep(3 * time.Second)
+	if initURL == "" {
+		fmt.Println("playlist missing EXT-X-MAP (init.m4s)")
+		return
 	}
+
+	out, _ := os.Create("downloads/soop/" + time.Now().String() + ".mp4")
+	defer out.Close()
+
+	fmt.Println("Downloading init.m4s")
+	res, _ = http.Get(initURL)
+	io.Copy(out, res.Body)
+
+	for i, seg := range segments {
+		res, _ = http.Get(seg)
+		fmt.Printf("\rDownloading segment %d/%d", i+1, len(segments))
+		io.Copy(out, res.Body)
+	}
+
+}
+
+// helper slop
+func extractQuotedValue(s string) string {
+	start := strings.Index(s, "\"")
+	end := strings.LastIndex(s, "\"")
+	if start == -1 || end == -1 || end <= start {
+		return ""
+	}
+	return s[start+1 : end]
 }

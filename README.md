@@ -12,13 +12,11 @@ Feature request or there's an issue the wiki doesn't cover? Join the Discord [he
 
 The -mode flag supports the following sites
 
-- afreeca
+- soop
 - bigo
 - chzzk !!! REQUIRES YT-DLP !!!
 - flex
-- kick
 - panda
-- soop !!! REQUIRES YT-DLP !!!
 - tiktok
 
 Remember, some sites may require cookies to be able to download streams, read more below
@@ -42,6 +40,9 @@ go install
 ```
 
 ## Concurrent Downloads
+
+> [!CAUTION]
+> Concurrent downloads are not implemented 
 
 ![concurrent screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/concurrent.png)
 
@@ -74,11 +75,9 @@ Found in your home folder @ `.afreeca-downloader/cookies`, you can input your co
 
 The cookies can be found in Developer tools > Storage > Cookies
 
-#### Afreeca
+#### Soop
 
-rip afreeca, will update as needed, but will keep until it dies
-
-- Copy only the VALUE of PdboxTicket into .afreeca-downloader/cookies/afreeca
+- Copy only the VALUE of AuthTicket into .afreeca-downloader/cookies/soop
 - Should end up looking something like ``.A32.7bbT5``
 
 #### Panda
@@ -97,12 +96,9 @@ This one requires a bit more cookies, please add the VALUES to .afreeca-download
 
 Mess up the order and it won't work
 
-Please note: i don't actually know if you need them or not, so just add them if you encounter any issues
+Please note: i have not checked in a year, ymmv
+will investigate in the future
 
 #### FlexTV
 - Copy only the VALUE of flx_oauth_access into .afreeca-downloader/cookies/flex
 - Should just look like a random string
-
-### Soop
-
-- Copy only the VALUE of client-id into .afreeca-downloader/cookies/soop
