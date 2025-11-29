@@ -7,6 +7,7 @@ import (
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/plugins/tiktok"
+	"os"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -34,7 +35,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					case 0:
 						go soop.Start(strings.TrimSpace(m.TextInput.Value()))
 					case 1:
-						go soop.DownloadVod(strings.TrimSpace(m.TextInput.Value()))
+						go func() {
+							soop.DownloadVod(strings.TrimSpace(m.TextInput.Value()))
+							m.Running = false
+							os.Exit(0)
+						}()
 					}
 				case 1:
 					go bigo.Start(strings.TrimSpace(m.TextInput.Value()))
