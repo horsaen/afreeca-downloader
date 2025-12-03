@@ -106,7 +106,7 @@ func DownloadVod(manifest string) {
 		return
 	}
 
-	out, err := os.Create("downloads/soop/" + time.Now().String() + ".mp4")
+	out, err := os.Create("downloads/soop/" + time.Now().Format("200601021504") + ".mp4")
 
 	if err != nil {
 		log.Fatal(err)
