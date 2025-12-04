@@ -85,9 +85,10 @@ func SoopModes(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	Modes := fmt.Sprintf(
-		"%s\n%s\n",
+		"%s\n%s\n%s\n",
 		tools.Checkbox("Stream", c == 0),
 		tools.Checkbox("Playlist", c == 1),
+		tools.Checkbox("User vods", c == 2),
 	)
 
 	return fmt.Sprintf(tpl, Modes)
@@ -112,6 +113,12 @@ func Soop(m model) string {
 	case 1:
 		msg = fmt.Sprintf(
 			"Playlist URL:\n\n%s\n\n%s",
+			m.TextInput.View(),
+			"(esc to quit)",
+		) + "\n"
+	case 2:
+		msg = fmt.Sprintf(
+			"Username:\n\n%s\n\n%s",
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"

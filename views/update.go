@@ -26,7 +26,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
 		case tea.KeyEnter:
-			if !m.Running && (strings.TrimSpace(m.TextInput.Value()) != "" || m.Platform == 8) && m.Mode != 2 {
+			if !m.Running && (strings.TrimSpace(m.TextInput.Value()) != "" || m.Platform == 8) {
 				m.Running = true
 				switch m.Platform {
 				case 0:
@@ -36,7 +36,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						go soop.Start(strings.TrimSpace(m.TextInput.Value()))
 					case 1:
 						go func() {
-							soop.DownloadVod(strings.TrimSpace(m.TextInput.Value()))
+							soop.DownloadPlaylist(strings.TrimSpace(m.TextInput.Value()))
+							m.Running = false
+							os.Exit(0)
+						}()
+					case 2:
+						go func() {
+							soop.UserVods(strings.TrimSpace(m.TextInput.Value()))
 							m.Running = false
 							os.Exit(0)
 						}()
@@ -101,8 +107,8 @@ func UpdateMode(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "j", "down":
 			m.Mode++
-			if m.Mode > 2 {
-				m.Mode = 2
+			if m.Mode > 3 {
+				m.Mode = 3
 			}
 		case "k", "up":
 			m.Mode--

@@ -68,9 +68,9 @@ func Download(bjid, broad_no, base, stream string) {
 	}
 }
 
-func DownloadVod(manifest string) {
+func DownloadPlaylist(manifest string) {
 	m3uURL := strings.Replace(manifest, ".smil", ".mp4", -1)
-	os.MkdirAll("downloads/soop", os.ModePerm)
+	os.MkdirAll("downloads/soop/vods", os.ModePerm)
 	res, err := http.Get(m3uURL)
 
 	if err != nil {
@@ -106,7 +106,70 @@ func DownloadVod(manifest string) {
 		return
 	}
 
-	out, err := os.Create("downloads/soop/" + time.Now().Format("200601021504") + ".mp4")
+	out, err := os.Create("downloads/soop/vods/" + time.Now().Format("200601021504") + ".mp4")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer out.Close()
+
+	fmt.Println("Downloading init.m4s")
+	res, _ = http.Get(initURL)
+	io.Copy(out, res.Body)
+
+	for i, seg := range segments {
+		res, err = http.Get(seg)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("\rDownloading segment %d/%d", i+1, len(segments))
+		io.Copy(out, res.Body)
+	}
+
+}
+
+func DownloadPlaylistVod(manifest, bjid string) {
+	m3uURL := strings.Replace(manifest, ".smil", ".mp4", -1)
+	os.MkdirAll("downloads/soop/"+bjid+"/vods", os.ModePerm)
+	res, err := http.Get(m3uURL)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	base, _ := url.Parse(m3uURL)
+	sc := bufio.NewScanner(res.Body)
+
+	var initURL string
+	var segments []string
+
+	for sc.Scan() {
+		line := strings.TrimSpace(sc.Text())
+
+		if strings.HasPrefix(line, "#EXT-X-MAP:") {
+			uri := extractQuotedValue(line)
+			full, _ := base.Parse(uri)
+			initURL = full.String()
+			continue
+		}
+
+		if strings.HasPrefix(line, "#") || line == "" {
+			continue
+		}
+
+		full, _ := base.Parse(line)
+		segments = append(segments, full.String())
+	}
+
+	if initURL == "" {
+		fmt.Println("playlist missing EXT-X-MAP (init.m4s)")
+		return
+	}
+
+	out, err := os.Create("downloads/soop/" + bjid + "/vods/" + time.Now().Format("200601021504") + ".mp4")
 
 	if err != nil {
 		log.Fatal(err)

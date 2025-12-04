@@ -23,10 +23,12 @@ func main() {
 
 	mode := flag.String("mode", "tui", "Mode")
 	userArg := flag.String("username", "", "Streamer username")
-	playlist := flag.Bool("playlist", false, "Download bot playlists")
 	concurrently := flag.Bool("concurrent", false, "Download streams concurrently")
-	vod := flag.Bool("vod", false, "Download Afreeca vod")
 	version := flag.Bool("version", false, "Print version")
+
+	// soop stuff
+	playlist := flag.Bool("playlist", false, "Download bot playlists")
+	userVod := flag.Bool("uservod", false, "Download soop user vods")
 
 	flag.Parse()
 
@@ -38,7 +40,7 @@ func main() {
 	// 	concurrent.Start()
 	// }
 
-	if *userArg != "" || *playlist || *vod || *concurrently || *mode == "tui" {
+	if *userArg != "" || *playlist || *userVod || *concurrently || *mode == "tui" {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
@@ -51,16 +53,12 @@ func main() {
 			var playlist string
 			fmt.Println("Enter playlist url:")
 			fmt.Scan(&playlist)
-			soop.DownloadVod(playlist)
+			soop.DownloadPlaylist(playlist)
+		} else if *userVod {
+			soop.UserVods(username)
 		} else {
 			soop.Start(username)
 		}
-		// if *vod {
-		// 	var TitleNo string
-		// 	fmt.Println("Enter title number:")
-		// 	fmt.Scan(&TitleNo)
-		// 	afreeca.Vod(TitleNo)
-		// }
 	case "bigo":
 		bigo.Start(username)
 	case "chzzk":
