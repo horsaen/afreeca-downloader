@@ -1,7 +1,6 @@
 package panda
 
 import (
-	"bufio"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -96,16 +95,53 @@ func ParseMaster(masterPlaylist string) string {
 		fmt.Println(err)
 	}
 
-	playlists := make([]string, 0)
+	body, _ := io.ReadAll(resp.Body)
+	lines := strings.Split(string(body), "\n")
 
-	scanner := bufio.NewScanner(resp.Body)
+	type Quality struct {
+		resolution int
+		url        string
+	}
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "https://") {
-			playlists = append(playlists, line)
+	var qualities []Quality
+
+	for i := range lines {
+		line := strings.TrimSpace(lines[i])
+
+		if strings.Contains(line, "NAME=") {
+			nameIdx := strings.Index(line, "NAME=\"")
+			if nameIdx != -1 {
+				nameIdx += 6
+				endIdx := strings.Index(line[nameIdx:], "\"")
+				if endIdx != -1 {
+					qualityStr := line[nameIdx : nameIdx+endIdx]
+
+					var resolution int
+					fmt.Sscanf(qualityStr, "%dp", &resolution)
+
+					if i+2 < len(lines) {
+						urlLine := strings.TrimSpace(lines[i+2])
+						if strings.HasPrefix(urlLine, "https://") {
+							qualities = append(qualities, Quality{
+								resolution: resolution,
+								url:        urlLine,
+							})
+						}
+					}
+				}
+			}
 		}
 	}
 
-	return playlists[0]
+	if len(qualities) > 0 {
+		maxQuality := qualities[0]
+		for _, q := range qualities {
+			if q.resolution > maxQuality.resolution {
+				maxQuality = q
+			}
+		}
+		return maxQuality.url
+	}
+
+	return ""
 }
