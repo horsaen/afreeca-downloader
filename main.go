@@ -28,7 +28,8 @@ func main() {
 
 	// soop stuff
 	playlist := flag.Bool("playlist", false, "Download bot playlists")
-	userVod := flag.Bool("uservod", false, "Download soop user vods")
+	userVods := flag.Bool("uservods", false, "Download soop user vods")
+	userVod := flag.Bool("uservod", false, "Download single user vod by title number")
 
 	flag.Parse()
 
@@ -40,7 +41,7 @@ func main() {
 	// 	concurrent.Start()
 	// }
 
-	if *userArg != "" || *playlist || *userVod || *concurrently || *mode == "tui" {
+	if *userArg != "" || *playlist || *userVods || *userVod || *concurrently || *mode == "tui" {
 		username = *userArg
 	} else {
 		fmt.Println("Enter username:")
@@ -54,8 +55,14 @@ func main() {
 			fmt.Println("Enter playlist url:")
 			fmt.Scan(&playlist)
 			soop.DownloadPlaylist(playlist)
-		} else if *userVod {
+		} else if *userVods {
 			soop.UserVods(username)
+		} else if *userVod {
+			var titleNo string
+			fmt.Println("Enter title number (only number!):")
+			fmt.Println("https://vod.sooplive.co.kr/player/xxxxxxxx")
+			fmt.Scan(&titleNo)
+			soop.DownloadUserVod(titleNo)
 		} else {
 			soop.Start(username)
 		}

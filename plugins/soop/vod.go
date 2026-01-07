@@ -25,6 +25,7 @@ type UserVod struct {
 type Vod struct {
 	Result int `json:"result"`
 	Data   struct {
+		Bjid  string `json:"bj_id"`
 		Files []struct {
 			File string `json:"file"`
 		} `json:"files"`
@@ -41,13 +42,27 @@ func UserVods(bjid string) {
 
 	var playlists []string
 	for i, t := range titles {
-		playlists = append(playlists, GetVideoManifest(t)...)
+		files, _ := GetVideoManifest(t)
+		playlists = append(playlists, files...)
 		fmt.Printf("\r%d playlist files found | Searched %d/%d vods", len(playlists), i+1, len(titles))
 	}
 
 	tools.WriteToFile("downloads/soop/"+bjid+"/vods/vod.txt", playlists)
 	fmt.Println("\nPlaylists archived to downloads/" + bjid + "vod.txt")
 	fmt.Println("Downloading vods")
+
+	for _, p := range playlists {
+		DownloadPlaylistVod(p, bjid)
+	}
+}
+
+func DownloadUserVod(titleNo string) {
+	playlists, bjid := GetVideoManifest(titleNo)
+	os.MkdirAll("downloads/soop/"+bjid+"/vods", os.ModePerm)
+
+	tools.WriteToFile("downloads/soop/"+bjid+"/vods/vod.txt", playlists)
+	fmt.Println("\nPlaylists archived to downloads/" + bjid + "vod.txt")
+	fmt.Println("Downloading vod")
 
 	for _, p := range playlists {
 		DownloadPlaylistVod(p, bjid)
@@ -91,7 +106,7 @@ func GetUserVods(bjid string) []string {
 	return playlists
 }
 
-func GetVideoManifest(titleNo string) []string {
+func GetVideoManifest(titleNo string) ([]string, string) {
 	url := "https://api.m.sooplive.co.kr/station/video/a/view"
 
 	payload := fmt.Sprintf(
@@ -127,5 +142,5 @@ func GetVideoManifest(titleNo string) []string {
 		files = append(files, f.File)
 	}
 
-	return files
+	return files, vod.Data.Bjid
 }

@@ -46,6 +46,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 							m.Running = false
 							os.Exit(0)
 						}()
+					case 3:
+						go func() {
+							soop.DownloadUserVod(strings.TrimSpace(m.TextInput.Value()))
+							m.Running = false
+							os.Exit(0)
+						}()
 					}
 				case 1:
 					go bigo.Start(strings.TrimSpace(m.TextInput.Value()))

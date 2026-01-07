@@ -8,7 +8,7 @@ func Exists(dir string) {
 	_, err := os.Stat(dir)
 
 	if os.IsNotExist(err) {
-		os.Mkdir(dir, 0755)
+		os.MkdirAll(dir, os.ModePerm)
 	}
 }
 
