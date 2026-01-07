@@ -7,6 +7,6 @@ import (
 
 func Version() {
 	fmt.Println("https://github.com/horsaen/afreeca-downloader")
-	fmt.Println("prerelease")
+	fmt.Println("v2.3")
 	os.Exit(0)
 }
