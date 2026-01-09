@@ -29,7 +29,7 @@ func main() {
 	// soop stuff
 	playlist := flag.Bool("playlist", false, "Download bot playlists")
 	userVods := flag.Bool("uservods", false, "Download soop user vods")
-	userVod := flag.Bool("uservod", false, "Download single user vod by title number")
+	userVod := flag.Bool("uservod", false, "Download vod by title number, use spaces to separate multiple vods.")
 
 	flag.Parse()
 

@@ -169,7 +169,7 @@ func DownloadPlaylistVod(manifest, bjid string) {
 		return
 	}
 
-	out, err := os.Create("downloads/soop/" + bjid + "/vods/" + time.Now().Format("200601021504") + ".mp4")
+	out, err := os.Create("downloads/soop/" + bjid + "/vods/" + time.Now().Format("20060102150405") + ".mp4")
 
 	if err != nil {
 		log.Fatal(err)

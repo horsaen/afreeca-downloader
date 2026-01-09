@@ -119,8 +119,9 @@ func Soop(m model) string {
 		) + "\n"
 	case 3:
 		msg = fmt.Sprintf(
-			"Title Number:\n\n%s\n\n%s\n\n%s",
+			"Title Number:\n%s\n\n%s\n\n%s\n\n%s",
 			"https://vod.sooplive.co.kr/player/"+keyword("xxxxxxxxx"),
+			"Use spaces to separate multiple vods.",
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"

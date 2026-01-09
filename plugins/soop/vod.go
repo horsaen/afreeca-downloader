@@ -56,17 +56,36 @@ func UserVods(bjid string) {
 	}
 }
 
-func DownloadUserVod(titleNo string) {
-	playlists, bjid := GetVideoManifest(titleNo)
-	os.MkdirAll("downloads/soop/"+bjid+"/vods", os.ModePerm)
+// i don't want to declare this but i gottta
+type VodThing struct {
+	Files []string
+	BJID  string
+}
 
-	tools.WriteToFile("downloads/soop/"+bjid+"/vods/vod.txt", playlists)
-	fmt.Println("\nPlaylists archived to downloads/" + bjid + "vod.txt")
-	fmt.Println("Downloading vod")
+func DownloadUserVod(titleNos string) {
+	vods := strings.Split(titleNos, " ")
 
-	for _, p := range playlists {
-		DownloadPlaylistVod(p, bjid)
+	var playlists []VodThing
+	for _, vod := range vods {
+		files, bjid := GetVideoManifest(vod)
+		playlists = append(playlists, VodThing{
+			Files: files,
+			BJID:  bjid,
+		})
 	}
+
+	for _, vod := range playlists {
+		os.MkdirAll("downloads/soop/"+vod.BJID+"/vods", os.ModePerm)
+		tools.WriteToFile("downloads/soop/"+vod.BJID+"/vods/vod.txt", vod.Files)
+		fmt.Println("\nPlaylists archived to downloads/" + vod.BJID + "/vod.txt")
+
+		fmt.Println("Downloading vod")
+
+		for _, p := range vod.Files {
+			DownloadPlaylistVod(p, vod.BJID)
+		}
+	}
+
 }
 
 func GetUserVods(bjid string) []string {
