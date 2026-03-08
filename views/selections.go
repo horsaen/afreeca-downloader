@@ -125,12 +125,26 @@ func Soop(m model) string {
 			m.TextInput.View(),
 			"(esc to quit)",
 		) + "\n"
-		// msg = fmt.Sprintf(
-		// 	"One m3u8 per line.\n\n%s\n\n%s",
-		// 	m.TextArea.View(),
-		// 	"(ctrl+c/esc to start download)",
-		// ) + "\n\n"
 	}
 
 	return msg
+}
+
+func LoginView(m model) string {
+	if m.LoginStep == 0 {
+		return fmt.Sprintf(
+			"Login username:\n\n%s\n\n%s",
+			m.TextInput.View(),
+			"(esc to quit)",
+		) + "\n"
+	}
+	return fmt.Sprintf(
+		"Password:\n\n%s\n\n%s",
+		m.TextInput.View(),
+		"(esc to quit)",
+	) + "\n"
+}
+
+func LoginPromptView(m model) string {
+	return "Login with credentials? " + subtle("(y/n)") + "\n"
 }

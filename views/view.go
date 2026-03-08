@@ -28,6 +28,11 @@ type model struct {
 	TextArea         textarea.Model
 	TextLines        []string
 	Running          bool
+	NeedsLogin       bool
+	LoginPrompt      bool
+	LoginStep        int
+	LoginUser        string
+	LoginPass        string
 	err              error
 }
 
@@ -55,6 +60,9 @@ func InitialModel() model {
 		TextLines:        []string{},
 		Running:          false,
 		err:              nil,
+		NeedsLogin:       false,
+		LoginPrompt:      false,
+		LoginStep:        0,
 	}
 }
 
@@ -67,8 +75,11 @@ func (m model) View() string {
 			s = Platforms(m)
 		} else if !m.ModeSelected {
 			s = Modes(m)
-		}
-		if m.ModeSelected {
+		} else if m.LoginPrompt {
+			s = LoginPromptView(m)
+		} else if m.NeedsLogin {
+			s = LoginView(m)
+		} else {
 			s = Soop(m)
 		}
 	}
