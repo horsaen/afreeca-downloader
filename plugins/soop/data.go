@@ -28,6 +28,17 @@ type User struct {
 	BroadNo int `json:"broadNo"`
 }
 
+type Credentials struct {
+	LoginUser string
+	Password  string
+}
+
+var creds Credentials
+
+func InitCredentials(loginUser, password string) {
+	creds = Credentials{LoginUser: loginUser, Password: password}
+}
+
 func GetBroadNo(bjid string) string {
 	res, _ := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
 
@@ -73,7 +84,7 @@ func GetStreamTk(bjid, broad_no string) string {
 	return channel.Channel.TK
 }
 
-func GetStreamAid(bjid, broad_no string) string {
+func GetStreamAid(bjid, broad_no string, retries int) string {
 	url := "https://live.sooplive.co.kr/afreeca/player_live_api.php?bjid=" + bjid
 
 	payload := fmt.Sprintf(
@@ -103,6 +114,12 @@ func GetStreamAid(bjid, broad_no string) string {
 
 	var channel Channel
 	json.Unmarshal(body, &channel)
+
+	if len(channel.Channel.AID) == 0 && creds.LoginUser != "" && creds.Password != "" && retries < 1 {
+		fmt.Println("AID empty, retry login")
+		UserLogin(creds.LoginUser, creds.Password)
+		return GetStreamAid(bjid, broad_no, retries+1)
+	}
 
 	return channel.Channel.AID
 }

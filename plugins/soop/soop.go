@@ -9,7 +9,7 @@ func Start(bjid string) {
 		fmt.Printf("User %s online.\n", bjid)
 		broad_no := GetBroadNo(bjid)
 
-		aid := GetStreamAid(bjid, broad_no)
+		aid := GetStreamAid(bjid, broad_no, 0)
 
 		server := GetStreamServer(broad_no)
 

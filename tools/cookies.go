@@ -5,6 +5,21 @@ import (
 	"os"
 )
 
+func WriteCookies(cookie, platform string) {
+	home, _ := os.UserHomeDir()
+
+	configBase := home + "/.afreeca-downloader"
+	cookieDir := configBase + "/cookies/"
+
+	if err := os.MkdirAll(cookieDir, os.ModePerm); err != nil {
+		panic(err)
+	}
+
+	if err := os.WriteFile(cookieDir+platform, []byte(cookie), 0644); err != nil {
+		panic(err)
+	}
+}
+
 func LoadCookies(platform string) [3]string {
 	home, _ := os.UserHomeDir()
 
@@ -27,5 +42,4 @@ func LoadCookies(platform string) [3]string {
 	file.Close()
 
 	return cookies
-
 }

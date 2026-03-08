@@ -15,11 +15,14 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"golang.org/x/term"
 )
 
 func main() {
 	tools.InitConfDir()
 	var username string
+	var id string
+	var password string
 
 	mode := flag.String("mode", "tui", "Mode")
 	userArg := flag.String("username", "", "Streamer username")
@@ -30,6 +33,7 @@ func main() {
 	playlist := flag.Bool("playlist", false, "Download bot playlists")
 	userVods := flag.Bool("uservods", false, "Download soop user vods")
 	userVod := flag.Bool("uservod", false, "Download vod by title number, use spaces to separate multiple vods.")
+	login := flag.Bool("login", false, "Soop login username")
 
 	flag.Parse()
 
@@ -48,6 +52,15 @@ func main() {
 		fmt.Scan(&username)
 	}
 
+	if *login {
+		fmt.Print("Login username: ")
+		fmt.Scan(&id)
+		fmt.Print("Password: ")
+		pwBytes, _ := term.ReadPassword(int(os.Stdin.Fd()))
+		fmt.Println()
+		password = string(pwBytes)
+	}
+
 	switch *mode {
 	case "soop":
 		if *playlist {
@@ -64,6 +77,7 @@ func main() {
 			fmt.Scan(&titleNo)
 			soop.DownloadUserVod(titleNo)
 		} else {
+			soop.InitCredentials(id, password)
 			soop.Start(username)
 		}
 	case "bigo":
