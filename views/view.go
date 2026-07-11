@@ -75,11 +75,11 @@ func (m model) View() string {
 			s = Platforms(m)
 		} else if !m.ModeSelected {
 			s = Modes(m)
-		} else if m.LoginPrompt {
+		} else if m.Platform == 0 && m.LoginPrompt {
 			s = LoginPromptView(m)
-		} else if m.NeedsLogin {
+		} else if m.Platform == 0 && m.NeedsLogin {
 			s = LoginView(m)
-		} else {
+		} else if m.Platform == 0 {
 			s = Soop(m)
 		}
 	}

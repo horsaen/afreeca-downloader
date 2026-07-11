@@ -17,7 +17,7 @@ import (
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	if m.PlatformSelected && m.ModeSelected && !m.LoginPrompt {
+	if m.PlatformSelected && !m.LoginPrompt && (m.ModeSelected || m.Platform != 0) {
 		m.TextInput, _ = m.TextInput.Update(msg)
 	}
 
