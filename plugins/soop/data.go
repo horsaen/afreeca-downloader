@@ -125,8 +125,7 @@ func GetStreamAid(bjid, broad_no string, retries int) string {
 }
 
 func GetStreamServer(broad_no string) string {
-	url := fmt.Sprintf("https://livestream-manager.sooplive.co.kr/broad_stream_assign.html?return_type=gcp_cdn&use_cors=true&cors_origin_url=play.sooplive.co.kr&broad_key=%s-common-master-hls&player_mode=landing", broad_no)
-
+	url := fmt.Sprintf("https://livestream-manager.sooplive.com/broad_stream_assign.html?return_type=gcp_cdn&use_cors=true&cors_origin_url=play.sooplive.co.kr&broad_key=%s-common-master-hls&player_mode=landing", broad_no)
 	req, _ := http.NewRequest("GET", url, nil)
 
 	cookies := tools.LoadCookies("soop")
