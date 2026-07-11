@@ -40,7 +40,13 @@ func InitCredentials(loginUser, password string) {
 }
 
 func GetBroadNo(bjid string) string {
-	res, _ := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
+	res, err := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
+
+	if err != nil || res == nil {
+		return ""
+	}
+
+	defer res.Body.Close()
 
 	body, _ := io.ReadAll(res.Body)
 
@@ -157,7 +163,13 @@ func GetMasterPlist(server, aid string) string {
 }
 
 func GetStreamQualities(master string, quality int) string {
-	res, _ := http.Get(master)
+	res, err := http.Get(master)
+
+	if err != nil || res == nil {
+		return ""
+	}
+
+	defer res.Body.Close()
 
 	playlists := make([]string, 0)
 
@@ -169,6 +181,10 @@ func GetStreamQualities(master string, quality int) string {
 		if strings.HasPrefix(line, "auth_playlist") {
 			playlists = append(playlists, line)
 		}
+	}
+
+	if quality >= len(playlists) {
+		return ""
 	}
 
 	return playlists[quality]

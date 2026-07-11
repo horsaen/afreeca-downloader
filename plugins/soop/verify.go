@@ -8,7 +8,13 @@ import (
 )
 
 func CheckOnline(bjid string) bool {
-	res, _ := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
+	res, err := http.Get("https://api-channel.sooplive.co.kr/v1.1/channel/" + bjid + "/home/section/broad")
+
+	if err != nil || res == nil {
+		return false
+	}
+
+	defer res.Body.Close()
 
 	body, _ := io.ReadAll(res.Body)
 
