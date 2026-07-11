@@ -6,22 +6,23 @@ import (
 	"os"
 )
 
-func Concurrent(user *[]string) {
+func Concurrent(index int, user []string, updates chan<- tools.ConcurrentRow) {
 	tools.Exists("downloads/Panda")
 
-	if !CheckExists((*user)[0]) {
-		(*user)[2] = "Not found"
-		(*user)[3] = "Not found"
-		(*user)[4] = "Not found"
+	if !CheckExists(user[0]) {
+		user[2] = "Not found"
+		user[3] = "Not found"
+		user[4] = "Not found"
+		updates <- tools.SnapshotConcurrentRow(index, user)
 		return
 	}
 
-	if ConcurrentCheck((*user)[0]) {
-		masterPlaylist := GetMaster((*user)[0])
+	if ConcurrentCheck(user[0]) {
+		masterPlaylist := GetMaster(user[0])
 
 		url := ParseMaster(masterPlaylist)
 
-		ConcurrentDownload(user, url)
+		ConcurrentDownload(index, user, url, updates)
 	}
 }
 

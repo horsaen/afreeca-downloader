@@ -2,7 +2,32 @@ package soop
 
 import (
 	"fmt"
+	"horsaen/afreeca-downloader/tools"
+	"time"
 )
+
+func Concurrent(index int, user []string, updates chan<- tools.ConcurrentRow) {
+	bjid := user[0]
+	tools.Exists("downloads/soop")
+
+	for {
+		broadNo := GetBroadNo(bjid)
+		aid := GetStreamAid(bjid, broadNo, 0)
+		server := GetStreamServer(broadNo)
+		master := GetMasterPlist(server, aid)
+		playlist := GetStreamQualities(master, 0)
+		base, stream := GetStream(server, playlist)
+
+		if !ConcurrentDownload(index, user, bjid, broadNo, base, stream, updates) {
+			user[2] = "Offline"
+			user[3] = "Offline"
+			user[4] = "Offline"
+			updates <- tools.SnapshotConcurrentRow(index, user)
+			time.Sleep(3 * time.Second)
+			continue
+		}
+	}
+}
 
 func Start(bjid string) {
 	if DvrCheck(bjid) {

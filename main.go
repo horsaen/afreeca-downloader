@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/plugins/bigo"
 	"horsaen/afreeca-downloader/plugins/chzzk"
+	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/soop"
@@ -41,9 +42,10 @@ func main() {
 		tools.Version()
 	}
 
-	// if *concurrently {
-	// 	concurrent.Start()
-	// }
+	if *concurrently {
+		concurrent.Start()
+		return
+	}
 
 	if *userArg != "" || *playlist || *userVods || *userVod || *concurrently || *mode == "tui" {
 		username = *userArg

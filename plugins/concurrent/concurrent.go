@@ -1,64 +1,111 @@
 package concurrent
 
-// import (
-// 	"bufio"
-// 	"horsaen/afreeca-downloader/plugins/bigo"
-// 	"horsaen/afreeca-downloader/plugins/flex"
-// 	"horsaen/afreeca-downloader/plugins/kick"
-// 	"horsaen/afreeca-downloader/plugins/panda"
-// 	"horsaen/afreeca-downloader/plugins/soop"
-// 	"horsaen/afreeca-downloader/tools"
-// 	"os"
-// 	"strings"
-// 	"time"
-// )
+import (
+	"bufio"
+	"fmt"
+	"horsaen/afreeca-downloader/plugins/bigo"
+	"horsaen/afreeca-downloader/plugins/flex"
+	"horsaen/afreeca-downloader/plugins/panda"
+	"horsaen/afreeca-downloader/plugins/soop"
+	"horsaen/afreeca-downloader/tools"
+	"os"
+	"strings"
+	"time"
+)
 
-// func GetUsers() [][]string {
-// 	var users [][]string
+func GetUsers() [][]string {
+	users := make([][]string, 0)
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return users
+	}
 
-// 	home, _ := os.UserHomeDir()
+	file, err := os.Open(home + "/.afreeca-downloader/users")
+	if err != nil {
+		return users
+	}
+	defer file.Close()
 
-// 	file, _ := os.Open(home + "/.afreeca-downloader/users")
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
 
-// 	scanner := bufio.NewScanner(file)
+		parts := strings.Split(line, ", ")
+		if len(parts) < 2 {
+			continue
+		}
 
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		split := strings.Split(line, ", ")
+		row := append(parts, "Offline", "Offline", "Offline")
+		users = append(users, row)
+	}
 
-// 		init := []string{"Offline", "Offline", "Offline"}
+	if err := scanner.Err(); err != nil {
+		return users
+	}
 
-// 		split = append(split, init...)
+	return users
+}
 
-// 		users = append(users, split)
-// 	}
+func CloneUsers(users [][]string) [][]string {
+	cloned := make([][]string, len(users))
+	for index, user := range users {
+		row := make([]string, len(user))
+		copy(row, user)
+		cloned[index] = row
+	}
 
-// 	return users
-// }
+	return cloned
+}
 
-// func Start() {
-// 	users := GetUsers()
+func Start() {
+	users := GetUsers()
+	if len(users) == 0 {
+		fmt.Println("No users found in ~/.afreeca-downloader/users")
+		return
+	}
 
-// 	for i := range users {
-// 		switch users[i][1] {
-// 		// case "afreeca":
-// 		// go afreeca.Concurrent(&users[i])
-// 		case "soop":
-// 			go soop.Concurrent(&users[i])
-// 		case "bigo":
-// 			go bigo.Concurrent(&users[i])
-// 		case "kick":
-// 			go kick.Concurrent(&users[i])
-// 		case "flex":
-// 			go flex.Concurrent(&users[i])
-// 		case "panda":
-// 			go panda.Concurrent(&users[i])
-// 		}
-// 	}
+	updates := make(chan tools.ConcurrentRow, len(users)*4)
+	state := CloneUsers(users)
 
-// 	for {
-// 		Table(users)
-// 		time.Sleep(1 * time.Second)
-// 		tools.ClearCli()
-// 	}
-// }
+	for index, user := range users {
+		current := make([]string, len(user))
+		copy(current, user)
+
+		switch current[1] {
+		case "bigo":
+			go bigo.Concurrent(index, current, updates)
+		case "soop":
+			go soop.Concurrent(index, current, updates)
+		case "flex":
+			go flex.Concurrent(index, current, updates)
+		case "panda":
+			go panda.Concurrent(index, current, updates)
+		default:
+			current[2] = "Unsupported"
+			current[3] = "Unsupported"
+			current[4] = "Unsupported"
+			state[index] = current
+		}
+	}
+
+	Table(state)
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case update := <-updates:
+			if update.Index >= 0 && update.Index < len(state) {
+				row := make([]string, len(update.Values))
+				copy(row, update.Values)
+				state[update.Index] = row
+				Table(state)
+			}
+		case <-ticker.C:
+			Table(state)
+		}
+	}
+}

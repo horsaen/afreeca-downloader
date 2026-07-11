@@ -6,22 +6,23 @@ import (
 	"os"
 )
 
-func Concurrent(user *[]string) {
+func Concurrent(index int, user []string, updates chan<- tools.ConcurrentRow) {
 	tools.Exists("downloads/Flex")
 
-	if !CheckExists((*user)[0]) {
-		(*user)[2] = "Not found"
-		(*user)[3] = "Not found"
-		(*user)[4] = "Not found"
+	if !CheckExists(user[0]) {
+		user[2] = "Not found"
+		user[3] = "Not found"
+		user[4] = "Not found"
+		updates <- tools.SnapshotConcurrentRow(index, user)
 		return
 	}
 
-	if ConcurrentCheck((*user)[0]) {
-		masterPlaylist, nickname, id := StreamData((*user)[0])
+	if ConcurrentCheck(user[0]) {
+		masterPlaylist, nickname, id := StreamData(user[0])
 
 		url := ParseMaster(masterPlaylist)
 
-		ConcurrentDownload(user, url, nickname, id)
+		ConcurrentDownload(index, user, url, nickname, id, updates)
 	}
 }
 

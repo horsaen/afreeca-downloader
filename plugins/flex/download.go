@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func ConcurrentDownload(user *[]string, playlist string, nickname string, userId string) {
+func ConcurrentDownload(index int, user []string, playlist string, nickname string, userId string, updates chan<- tools.ConcurrentRow) {
 	tools.Exists("downloads/Flex/" + userId)
 
 	tr := http.Transport{
@@ -36,10 +36,11 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 		resp, err := client.Do(req)
 
 		if err != nil {
-			(*user)[2] = "ERROR"
-			(*user)[3] = "RETRYING"
-			(*user)[4] = err.Error()
-			ConcurrentDownload(user, playlist, nickname, userId)
+			user[2] = "ERROR"
+			user[3] = "RETRYING"
+			user[4] = err.Error()
+			updates <- tools.SnapshotConcurrentRow(index, user)
+			return
 		}
 
 		bodyBytes, _ := io.ReadAll(resp.Body)
@@ -47,10 +48,11 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 		bodyText := string(bodyBytes)
 
 		if !strings.Contains(bodyText, ".ts") {
-			(*user)[2] = "Offline"
-			(*user)[3] = "Offline"
-			(*user)[4] = "Offline"
-			Concurrent(user)
+			user[2] = "Offline"
+			user[3] = "Offline"
+			user[4] = "Offline"
+			updates <- tools.SnapshotConcurrentRow(index, user)
+			return
 		}
 
 		scanner := bufio.NewScanner(strings.NewReader(bodyText))
@@ -64,10 +66,11 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 					resp, err := http.Get(line)
 
 					if err != nil {
-						(*user)[2] = "ERROR"
-						(*user)[3] = "RETRYING"
-						(*user)[4] = err.Error()
-						ConcurrentDownload(user, playlist, nickname, userId)
+						user[2] = "ERROR"
+						user[3] = "RETRYING"
+						user[4] = err.Error()
+						updates <- tools.SnapshotConcurrentRow(index, user)
+						return
 					}
 
 					// since flex doesn't actually return a content-length header for go just use this instead of having to read the segments in ram
@@ -75,14 +78,16 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 					bytes = filesize.Size()
 					elapsed_time := time.Since(start_time)
 
-					(*user)[2] = tools.FormatBytes(bytes)
-					(*user)[3] = tools.FormatTime(elapsed_time)
-					(*user)[4] = filename
+					user[2] = tools.FormatBytes(bytes)
+					user[3] = tools.FormatTime(elapsed_time)
+					user[4] = filename
+					updates <- tools.SnapshotConcurrentRow(index, user)
 
 					_, err = io.Copy(out, resp.Body)
 
 					if err != nil {
 						fmt.Println(err)
+						return
 					}
 
 					playlistUrls[line] = true
@@ -94,7 +99,7 @@ func ConcurrentDownload(user *[]string, playlist string, nickname string, userId
 	}
 }
 
-func Download(playlist string, nickname string, userId string) bool {
+func Download(playlist string, nickname string, userId string) {
 	tools.Exists("downloads/Flex/" + userId)
 
 	tr := http.Transport{

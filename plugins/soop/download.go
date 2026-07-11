@@ -14,6 +14,87 @@ import (
 	"time"
 )
 
+func ConcurrentDownload(index int, user []string, bjid, broadNo, base, stream string, updates chan<- tools.ConcurrentRow) bool {
+	path := fmt.Sprintf("downloads/soop/%s", bjid)
+	file := fmt.Sprintf("%s-%s-%s-soop.ts", bjid, broadNo, time.Now().Format("200601021504"))
+	os.MkdirAll(path, os.ModePerm)
+	out, err := os.Create(path + "/" + file)
+	if err != nil {
+		user[2] = "ERROR"
+		user[3] = "RETRYING"
+		user[4] = err.Error()
+		updates <- tools.SnapshotConcurrentRow(index, user)
+		return false
+	}
+
+	var prevSegments []string
+	var bytes int64 = 0
+	startTime := time.Now()
+
+	for {
+		res, err := http.Get(stream)
+		if err != nil {
+			user[2] = "ERROR"
+			user[3] = "RETRYING"
+			user[4] = err.Error()
+			updates <- tools.SnapshotConcurrentRow(index, user)
+			return false
+		}
+
+		scanner := bufio.NewScanner(res.Body)
+		currentSegments := make([]string, 0)
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasSuffix(line, ".TS") {
+				currentSegments = append(currentSegments, line)
+				if !slices.Contains(prevSegments, line) {
+					segRes, err := http.Get(base + line)
+					if err != nil {
+						user[2] = "ERROR"
+						user[3] = "RETRYING"
+						user[4] = err.Error()
+						updates <- tools.SnapshotConcurrentRow(index, user)
+						return false
+					}
+
+					bytes += segRes.ContentLength
+					elapsedTime := time.Since(startTime)
+
+					user[2] = tools.FormatBytes(bytes)
+					user[3] = tools.FormatTime(elapsedTime)
+					user[4] = file
+					updates <- tools.SnapshotConcurrentRow(index, user)
+
+					_, err = io.Copy(out, segRes.Body)
+					if err != nil {
+						user[2] = "ERROR"
+						user[3] = "RETRYING"
+						user[4] = err.Error()
+						updates <- tools.SnapshotConcurrentRow(index, user)
+						return false
+					}
+				}
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			user[2] = "ERROR"
+			user[3] = "RETRYING"
+			user[4] = err.Error()
+			updates <- tools.SnapshotConcurrentRow(index, user)
+			return false
+		}
+
+		if len(currentSegments) == 0 {
+			return false
+		}
+
+		prevSegments = currentSegments
+		time.Sleep(3 * time.Second)
+	}
+}
+
 func Download(bjid, broad_no, base, stream string) {
 	path := fmt.Sprintf("downloads/soop/%s", bjid)
 	file := fmt.Sprintf("%s-%s-%s-soop.ts", bjid, broad_no, time.Now().Format("200601021504"))
