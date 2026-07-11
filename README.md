@@ -1,23 +1,19 @@
 # afreeca-downloader
 
-A simple tool to download streams from afreeca and other sites
+A simple tool to download streams from Soop and other sites
 
 ![tui screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/tui.png)
 
 Feature request or there's an issue the wiki doesn't cover? Join the Discord [here](https://discord.gg/yzNM7CPn4s)
 
-[support afreeca-downloader](https://ko-fi.com/ihatemicrowave)
-
 ## Supported Sites
 
-The -mode flag supports the following sites
-
-- soop
-- bigo
-- chzzk !!! REQUIRES YT-DLP !!!
-- flex
-- panda
-- tiktok
+- [SOOP](https://www.sooplive.com/)
+- [BIGO](https://www.bigo.tv/)
+- [CHZZK](https://chzzk.naver.com/)
+- [FLEX / 플렉스티비](https://www.flextv.co.kr/)
+- [PandaTV / 팬더티비](https://www.pandalive.co.kr/)
+- [TikTok](https://www.tiktok.com/)
 
 Remember, some sites may require cookies to be able to download streams, read more below
 
@@ -27,47 +23,50 @@ Have no clue what you're looking at? Don't worry! There's a simple guide [here](
 
 Pre-built binaries are available in the [releases](https://github.com/horsaen/afreeca-downloader/releases) tab.
 
-To build from source:
+To build and install from source:
 
 Clone repo
 ```bash
-git clone https://github.com/horsaen/afreeca-downloader.git
+git clone https://github.com/horsaen/afreeca-downloader.git && cd afreeca-downloader
 ```
 
-Install
+Build, Install (make sure go binaries are added to path)
 ```bash
 go install
 ```
 
 ## Concurrent Downloads
 
-> [!CAUTION]
-> Concurrent downloads are not implemented 
-
 ![concurrent screenshot](https://raw.githubusercontent.com/horsaen/imgstore/main/afreeca-downloader/concurrent.png)
 
-Supports all sites except:
-- Chzzk
-- Soop
-- TikTok
+The following sites are currently supported for concurrent downloads:
+- [SOOP](https://www.sooplive.com/)
+- [BIGO](https://www.bigo.tv/)
+- [FLEX / 플렉스티비](https://www.flextv.co.kr/)
+- [PandaTV / 팬더티비](https://www.pandalive.co.kr/)
 
 To add users, open the users file @ `.afreeca-downloader/users`, and input users following the format
 
 USERNAME, PLATFORM
 
 ```
-user1, afreeca
+user1, soop
 user2, bigo
 user3, flex
 ```
 
-Then simply run the program using -concurrent
+Then simply run the program using `-concurrent`
+
+In the TUI, use the `Concurrent` platform to start the runner or refresh Soop credentials before launching it.
 
 ## Set Cookies
 In order to function correctly, sometimes sites will require that you use cookies in order to validate network requests.
 
-### Automatic
-Feel free to use afreeca-downloader's sister project, [afdl-cookie-loader](https://github.com/horsaen/afdl-cookie-loader). just input your login info, and it'll handle the rest :D
+### Auto
+
+#### Soop
+
+Soop supports logging in fron the TUI. This will store your cookie automattically, and will retry a login if the initial stream retrieval does not work. Please note, only username + password is supported, social logins (Google, etc) are not supported.
 
 ### Manual
 
@@ -85,19 +84,7 @@ The cookies can be found in Developer tools > Storage > Cookies
 - Copy only the VALUE of sessKey into .afreeca-downloader/cookies/panda
 - Should just look like a random string
 
-Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there doesn't seem to be a fix for this (more testing needed)
-
-#### kick
-This one requires a bit more cookies, please add the VALUES to .afreeca-downloader/cookies/kick in the following order:
-
-1. __cf_bm
-2. cf_clearance
-3. kick_session
-
-Mess up the order and it won't work
-
-Please note: i have not checked in a year, ymmv
-will investigate in the future
+Please note: using cookies on panda causes you to be kicked out of the current tab if you are grabbing the info for the same stream, there is no way around this.
 
 #### FlexTV
 - Copy only the VALUE of flx_oauth_access into .afreeca-downloader/cookies/flex
