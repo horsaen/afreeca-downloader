@@ -42,18 +42,6 @@ func main() {
 		tools.Version()
 	}
 
-	if *concurrently {
-		concurrent.Start()
-		return
-	}
-
-	if *userArg != "" || *playlist || *userVods || *userVod || *concurrently || *mode == "tui" {
-		username = *userArg
-	} else {
-		fmt.Println("Enter username:")
-		fmt.Scan(&username)
-	}
-
 	if *login {
 		fmt.Print("Login username: ")
 		fmt.Scan(&id)
@@ -61,6 +49,22 @@ func main() {
 		pwBytes, _ := term.ReadPassword(int(os.Stdin.Fd()))
 		fmt.Println()
 		password = string(pwBytes)
+	}
+
+	if *concurrently {
+		soop.InitCredentials(id, password)
+		if *login {
+			soop.UserLogin(id, password)
+		}
+		concurrent.Start()
+		return
+	}
+
+	if *userArg != "" || *playlist || *userVods || *userVod || *mode == "tui" {
+		username = *userArg
+	} else {
+		fmt.Println("Enter username:")
+		fmt.Scan(&username)
 	}
 
 	switch *mode {
