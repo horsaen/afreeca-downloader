@@ -27,7 +27,6 @@ func InitConfDir() {
 		os.Mkdir(configBase+"/cookies", 0755)
 		os.Create(cookies + "afreeca")
 		os.Create(cookies + "flex")
-		os.Create(cookies + "kick")
 		os.Create(cookies + "panda")
 		os.Create(cookies + "soop")
 	}
