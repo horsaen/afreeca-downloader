@@ -3,10 +3,12 @@ package views
 import (
 	"horsaen/afreeca-downloader/plugins/bigo"
 	"horsaen/afreeca-downloader/plugins/chzzk"
+	"horsaen/afreeca-downloader/plugins/concurrent"
 	"horsaen/afreeca-downloader/plugins/flex"
 	"horsaen/afreeca-downloader/plugins/panda"
 	"horsaen/afreeca-downloader/plugins/soop"
 	"horsaen/afreeca-downloader/plugins/tiktok"
+	"horsaen/afreeca-downloader/tools"
 	"os"
 	"strings"
 
@@ -34,6 +36,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.LoginPrompt = false
 				m.NeedsLogin = false
 				m.TextInput.SetValue("")
+				if m.Platform == 6 {
+					tools.ClearCli()
+					go concurrent.Start()
+					return m, tea.Quit
+				}
 				return m, nil
 			}
 			return m, nil
@@ -58,6 +65,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.NeedsLogin = false
 					soop.InitCredentials(m.LoginUser, m.LoginPass)
 					return m, nil
+				}
+			}
+
+			if m.Platform == 6 && m.NeedsLogin {
+				switch m.LoginStep {
+				case 0:
+					m.LoginUser = strings.TrimSpace(m.TextInput.Value())
+					m.TextInput.SetValue("")
+					m.LoginStep = 1
+					m.TextInput.EchoMode = textinput.EchoPassword
+					return m, nil
+				case 1:
+					m.LoginPass = m.TextInput.Value()
+					m.TextInput.SetValue("")
+					m.TextInput.EchoMode = textinput.EchoNormal
+					m.NeedsLogin = false
+					soop.InitCredentials(m.LoginUser, m.LoginPass)
+					soop.UserLogin(m.LoginUser, m.LoginPass)
+					tools.ClearCli()
+					go concurrent.Start()
+					return m, tea.Quit
 				}
 			}
 
@@ -97,9 +125,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					go panda.Start(strings.TrimSpace(m.TextInput.Value()))
 				case 5:
 					go tiktok.Start(strings.TrimSpace(m.TextInput.Value()))
-					// case 6:
-					// 	tools.ClearCli()
-					// go concurrent.Start()
+				case 6:
+					tools.ClearCli()
+					go concurrent.Start()
+					return m, tea.Quit
 				}
 			}
 		}
@@ -125,8 +154,8 @@ func UpdatePlatforms(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "j", "down":
 			m.Platform++
-			if m.Platform > 5 {
-				m.Platform = 5
+			if m.Platform > 6 {
+				m.Platform = 6
 			}
 		case "k", "up":
 			m.Platform--
@@ -135,6 +164,11 @@ func UpdatePlatforms(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			m.PlatformSelected = true
+			if m.Platform == 6 {
+				m.ModeSelected = true
+				m.LoginPrompt = true
+				m.TextInput.SetValue("")
+			}
 		}
 	}
 

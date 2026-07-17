@@ -81,6 +81,12 @@ func (m model) View() string {
 			s = LoginView(m)
 		} else if m.Platform == 0 {
 			s = Soop(m)
+		} else if m.Platform == 6 && m.LoginPrompt {
+			s = "Login to Soop for cookie refresh? " + subtle("(y/n)") + "\n"
+		} else if m.Platform == 6 && m.NeedsLogin {
+			s = LoginView(m)
+		} else if m.Platform == 6 {
+			s = "Starting concurrent mode...\n"
 		}
 	}
 

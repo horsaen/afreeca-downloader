@@ -13,14 +13,14 @@ func Platforms(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	Platforms := fmt.Sprintf(
-		"%s\n%s\n%s\n%s\n%s\n%s\n",
+		"%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 		tools.Checkbox("Soop", c == 0),
 		tools.Checkbox("Bigo", c == 1),
 		tools.Checkbox("Chzzk", c == 2),
 		tools.Checkbox("Flex", c == 3),
 		tools.Checkbox("Panda", c == 4),
 		tools.Checkbox("TikTok", c == 5),
-		// tools.Checkbox("Concurrent", c == 6),
+		tools.Checkbox("Concurrent", c == 6),
 	)
 
 	return fmt.Sprintf(tpl, Platforms)
