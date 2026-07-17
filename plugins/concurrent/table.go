@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var tableLines int
+
 func Table(users [][]string) {
 	widths := []int{8, 20, 14, 10, 28}
 	headers := []string{"Platform", "Name", "Size", "Duration", "Path"}
@@ -21,7 +23,13 @@ func Table(users [][]string) {
 		}
 	}
 
-	fmt.Print("\033[H\033[2J")
+	lines := 2 + len(users)
+
+	if tableLines > 0 {
+		fmt.Printf("\033[%dA", tableLines)
+	}
+	tableLines = lines
+
 	for index, header := range headers {
 		fmt.Printf("%-*s  ", widths[index], header)
 	}

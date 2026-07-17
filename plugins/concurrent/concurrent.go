@@ -61,6 +61,8 @@ func CloneUsers(users [][]string) [][]string {
 }
 
 func Start() {
+	tools.ClearCli()
+
 	users := GetUsers()
 	if len(users) == 0 {
 		fmt.Println("No users found in ~/.afreeca-downloader/users")
