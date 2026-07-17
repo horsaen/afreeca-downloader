@@ -32,7 +32,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.NeedsLogin = true
 				m.TextInput.SetValue("")
 				return m, nil
-			case "n", "N", "esc":
+			case "n", "N":
 				m.LoginPrompt = false
 				m.NeedsLogin = false
 				m.TextInput.SetValue("")
@@ -42,12 +42,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, tea.Quit
 				}
 				return m, nil
+			case "esc":
+				os.Exit(0)
 			}
 			return m, nil
 		}
 
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
+			os.Exit(0)
 			return m, tea.Quit
 		case tea.KeyEnter:
 			if m.ModeSelected && m.Platform == 0 && m.Mode == 0 && m.NeedsLogin {
