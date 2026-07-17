@@ -105,6 +105,7 @@ func main() {
 		if _, err := p.Run(); err != nil {
 			log.Fatal(err)
 		}
+		select {}
 	default:
 		fmt.Println("Mode not supported, exiting.")
 		os.Exit(1)
