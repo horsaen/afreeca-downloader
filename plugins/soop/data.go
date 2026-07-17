@@ -130,7 +130,7 @@ func GetStreamAid(bjid, broad_no string, retries int) string {
 	return channel.Channel.AID
 }
 
-func GetStreamServer(broad_no string) string {
+func GetStreamServer(broad_no string, retries int) string {
 	url := fmt.Sprintf("https://livestream-manager.sooplive.com/broad_stream_assign.html?return_type=gcp_cdn&use_cors=true&cors_origin_url=play.sooplive.co.kr&broad_key=%s-common-master-hls&player_mode=landing", broad_no)
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -154,6 +154,12 @@ func GetStreamServer(broad_no string) string {
 
 	var server Server
 	json.Unmarshal(body, &server)
+
+	if server.ViewUrl == "" && creds.LoginUser != "" && creds.Password != "" && retries < 1 {
+		fmt.Println("Server URL empty, retry login")
+		UserLogin(creds.LoginUser, creds.Password)
+		return GetStreamServer(broad_no, retries+1)
+	}
 
 	return server.ViewUrl
 }

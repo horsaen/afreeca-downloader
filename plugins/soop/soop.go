@@ -23,7 +23,7 @@ func Concurrent(index int, user []string, updates chan<- tools.ConcurrentRow) {
 		}
 
 		aid := GetStreamAid(bjid, broadNo, 0)
-		server := GetStreamServer(broadNo)
+		server := GetStreamServer(broadNo, 0)
 
 		if server == "" {
 			user[2] = "Offline"
@@ -70,7 +70,7 @@ func Start(bjid string) {
 
 		aid := GetStreamAid(bjid, broad_no, 0)
 
-		server := GetStreamServer(broad_no)
+		server := GetStreamServer(broad_no, 0)
 
 		if server == "" {
 			return
