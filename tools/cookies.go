@@ -3,9 +3,15 @@ package tools
 import (
 	"bufio"
 	"os"
+	"sync"
 )
 
+var cookieMu sync.Mutex
+
 func WriteCookies(cookie, platform string) {
+	cookieMu.Lock()
+	defer cookieMu.Unlock()
+
 	home, _ := os.UserHomeDir()
 
 	configBase := home + "/.afreeca-downloader"
@@ -21,6 +27,9 @@ func WriteCookies(cookie, platform string) {
 }
 
 func LoadCookies(platform string) [3]string {
+	cookieMu.Lock()
+	defer cookieMu.Unlock()
+
 	home, _ := os.UserHomeDir()
 
 	configBase := home + "/.afreeca-downloader"
