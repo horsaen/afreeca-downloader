@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -96,23 +95,23 @@ func GetUserVods(bjid string) []string {
 	for url != "" {
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			log.Fatal(err)
+			break
 		}
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			log.Fatal(err)
+			break
 		}
 
 		body, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
 		if err != nil {
-			log.Fatal(err)
+			break
 		}
 
 		var userVod UserVod
 		if err := json.Unmarshal(body, &userVod); err != nil {
-			log.Fatal(err)
+			break
 		}
 
 		for _, v := range userVod.Data {
@@ -146,7 +145,7 @@ func GetVideoManifest(titleNo string) ([]string, string) {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, ""
 	}
 
 	defer resp.Body.Close()

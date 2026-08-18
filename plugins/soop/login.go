@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -26,7 +25,7 @@ func UserLogin(username, password string) bool {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return false
 	}
 
 	defer resp.Body.Close()
@@ -35,6 +34,8 @@ func UserLogin(username, password string) bool {
 
 	var login LoginStruct
 	json.Unmarshal(body, &login)
+
+	fmt.Print(login.Result)
 
 	if login.Result == 1 {
 		cookies := resp.Cookies()

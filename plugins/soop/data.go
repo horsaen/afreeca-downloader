@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"horsaen/afreeca-downloader/tools"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -77,7 +76,7 @@ func GetStreamTk(bjid, broad_no string) string {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
 
 	defer resp.Body.Close()
@@ -111,7 +110,7 @@ func GetStreamAid(bjid, broad_no string, retries int) string {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
 
 	defer resp.Body.Close()
@@ -145,7 +144,7 @@ func GetStreamServer(broad_no string, retries int) string {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return ""
 	}
 
 	defer resp.Body.Close()
